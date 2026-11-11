@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#194d40">
+  <meta name="description" content="循物二手交易平台课程项目，让闲置好物继续发光。">
+  <title>循物 · 让好物继续</title>
+  <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/app.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <div class="announcement">旧物的新旅程，从这里开始。<span>校园闲置 · 循环好物</span></div>
+  <header class="header"><div class="header-inner">
+    <a class="brand" href="#discover" aria-label="循物首页"><img src="/assets/logo.svg" alt=""><b>循物</b><span>XUNWU</span></a>
+    <nav aria-label="主导航" id="nav">
+      <a href="#discover">发现闲置</a><a href="#favorites">我的收藏</a><a href="#orders">我的订单</a><a href="#messages">消息</a><a href="#profile">我的</a>
+    </nav>
+    <div class="header-actions"><button class="primary" id="publish-btn"><span>＋</span> 发布闲置</button><button class="avatar" id="identity-btn" aria-label="账号与退出">登</button></div>
+  </div></header>
+  <main id="app" tabindex="-1"><div class="loading">正在整理好物…</div></main>
+  <footer><div><a class="brand" href="#discover"><b>循物</b><span>XUNWU</span></a><p>让闲置流动，让好物继续。</p></div><div class="footer-links"><span>Spring Boot · 分层架构</span><a href="#admin">管理入口 ↗</a><span>课程项目 · 无真实支付</span></div><div class="footer-bottom">© 2026 循物 · 二手交易课程项目<span>MySQL 持久化 · Java / Spring Boot · REST API</span></div></footer>
+  <dialog id="modal"><div id="modal-content"></div></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript>请开启 JavaScript 以浏览和操作前端演示。</noscript>
+</body>
+</html>

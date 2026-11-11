@@ -1,0 +1,505 @@
+{
+  "admins": [
+    {
+      "admin_id": 1,
+      "login_name": "admin01"
+    },
+    {
+      "admin_id": 2,
+      "login_name": "admin02"
+    }
+  ],
+  "users": [
+    {
+      "user_id": 1,
+      "nickname": "林同学",
+      "phone": "19900000001",
+      "account_status": "正常"
+    },
+    {
+      "user_id": 2,
+      "nickname": "陈同学",
+      "phone": "19900000002",
+      "account_status": "正常"
+    },
+    {
+      "user_id": 3,
+      "nickname": "周同学",
+      "phone": "19900000003",
+      "account_status": "正常"
+    },
+    {
+      "user_id": 4,
+      "nickname": "李同学",
+      "phone": "19900000004",
+      "account_status": "正常"
+    },
+    {
+      "user_id": 5,
+      "nickname": "赵同学",
+      "phone": "19900000005",
+      "account_status": "正常"
+    }
+  ],
+  "addresses": [
+    {
+      "address_id": 1,
+      "user_id": 1,
+      "recipient_name": "演示收件人1",
+      "recipient_phone": "19900000001",
+      "detail_address": "重庆市重庆市北碚区虚构示例路1号"
+    },
+    {
+      "address_id": 2,
+      "user_id": 2,
+      "recipient_name": "演示收件人2",
+      "recipient_phone": "19900000002",
+      "detail_address": "重庆市重庆市北碚区虚构示例路2号"
+    },
+    {
+      "address_id": 3,
+      "user_id": 3,
+      "recipient_name": "演示收件人3",
+      "recipient_phone": "19900000003",
+      "detail_address": "重庆市重庆市北碚区虚构示例路3号"
+    }
+  ],
+  "products": [
+    {
+      "product_id": 101,
+      "seller_id": 1,
+      "title": "机械键盘",
+      "description": "九成新，机械键盘，个人闲置；演示数据，不对应真实交易。",
+      "price_cents": 18000,
+      "category": "数码配件",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "在售",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "信息完整，审核通过"
+    },
+    {
+      "product_id": 102,
+      "seller_id": 2,
+      "title": "二手显示器",
+      "description": "九成新，二手显示器，个人闲置；演示数据，不对应真实交易。",
+      "price_cents": 45000,
+      "category": "数码设备",
+      "support_express": 0,
+      "support_pickup": 1,
+      "product_status": "已售",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "信息完整，审核通过"
+    },
+    {
+      "product_id": 103,
+      "seller_id": 3,
+      "title": "算法导论",
+      "description": "九成新，算法导论，个人闲置；演示数据，不对应真实交易。",
+      "price_cents": 6000,
+      "category": "图书教材",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "锁定",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "信息完整，审核通过"
+    },
+    {
+      "product_id": 105,
+      "seller_id": 5,
+      "title": "蓝牙耳机",
+      "description": "九成新，蓝牙耳机，个人闲置；演示数据，不对应真实交易。",
+      "price_cents": 12000,
+      "category": "数码配件",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "锁定",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "信息完整，审核通过"
+    },
+    {
+      "product_id": 106,
+      "seller_id": 1,
+      "title": "无线鼠标",
+      "description": "九成新，无线鼠标，个人闲置；演示数据，不对应真实交易。",
+      "price_cents": 7500,
+      "category": "数码配件",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "下架",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "信息完整，审核通过"
+    },
+    {
+      "product_id": 107,
+      "seller_id": 2,
+      "title": "无线路由器",
+      "description": "九成新，无线路由器，个人闲置；演示数据，不对应真实交易。",
+      "price_cents": 9000,
+      "category": "数码设备",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "在售",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "信息完整，审核通过"
+    },
+    {
+      "product_id": 111,
+      "seller_id": 3,
+      "title": "双肩背包",
+      "description": "九成新，双肩背包，个人闲置；演示数据，不对应真实交易。",
+      "price_cents": 5000,
+      "category": "生活用品",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "草稿",
+      "audit_status": "待审核",
+      "audit_admin_id": null,
+      "audit_note": null
+    },
+    {
+      "product_id": 112,
+      "seller_id": 2,
+      "title": "富士风格复古相机",
+      "description": "相机外观保存完好，功能正常。附相机包与充电线，欢迎当面试机。",
+      "price_cents": 128000,
+      "category": "数码设备",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "在售",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "演示商品，信息完整"
+    },
+    {
+      "product_id": 113,
+      "seller_id": 3,
+      "title": "奶油色阅读台灯",
+      "description": "暖光台灯，三个亮度档位。灯罩有轻微使用痕迹，搬宿舍转出。",
+      "price_cents": 4500,
+      "category": "生活用品",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "在售",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "演示商品，信息完整"
+    },
+    {
+      "product_id": 114,
+      "seller_id": 4,
+      "title": "城市通勤自行车",
+      "description": "单速通勤车，刹车灵敏，刚做过基础保养。仅限校内自提。",
+      "price_cents": 32000,
+      "category": "运动户外",
+      "support_express": 0,
+      "support_pickup": 1,
+      "product_status": "在售",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "演示商品，信息完整"
+    },
+    {
+      "product_id": 115,
+      "seller_id": 5,
+      "title": "轻便帆布托特包",
+      "description": "米色帆布包，可放下笔记本电脑，洗净后闲置。",
+      "price_cents": 2800,
+      "category": "服饰箱包",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "在售",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "演示商品，信息完整"
+    },
+    {
+      "product_id": 116,
+      "seller_id": 2,
+      "title": "极简桌面小音箱",
+      "description": "USB 供电的小音箱，声音清晰。附连接线，可自提或快递。",
+      "price_cents": 8500,
+      "category": "数码配件",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "在售",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "演示商品，信息完整"
+    },
+    {
+      "product_id": 117,
+      "seller_id": 4,
+      "title": "手冲咖啡分享壶",
+      "description": "耐热玻璃分享壶，容量 500ml，无磕碰。毕业清理闲置。",
+      "price_cents": 3900,
+      "category": "生活用品",
+      "support_express": 1,
+      "support_pickup": 1,
+      "product_status": "在售",
+      "audit_status": "通过",
+      "audit_admin_id": 1,
+      "audit_note": "演示商品，信息完整"
+    }
+  ],
+  "product_images": [
+    {
+      "image_id": 1011,
+      "product_id": 101,
+      "image_url": "/assets/keyboard.svg"
+    },
+    {
+      "image_id": 1012,
+      "product_id": 101,
+      "image_url": "/assets/keyboard-detail.svg"
+    },
+    {
+      "image_id": 1021,
+      "product_id": 102,
+      "image_url": "/assets/monitor.svg"
+    },
+    {
+      "image_id": 1031,
+      "product_id": 103,
+      "image_url": "/assets/book.svg"
+    },
+    {
+      "image_id": 1051,
+      "product_id": 105,
+      "image_url": "/assets/headphones.svg"
+    },
+    {
+      "image_id": 1061,
+      "product_id": 106,
+      "image_url": "/assets/mouse.svg"
+    },
+    {
+      "image_id": 1071,
+      "product_id": 107,
+      "image_url": "/assets/router.svg"
+    },
+    {
+      "image_id": 1111,
+      "product_id": 111,
+      "image_url": "/assets/bag.svg"
+    },
+    {
+      "image_id": 1121,
+      "product_id": 112,
+      "image_url": "/assets/camera.svg"
+    },
+    {
+      "image_id": 1131,
+      "product_id": 113,
+      "image_url": "/assets/lamp.svg"
+    },
+    {
+      "image_id": 1141,
+      "product_id": 114,
+      "image_url": "/assets/bike.svg"
+    },
+    {
+      "image_id": 1151,
+      "product_id": 115,
+      "image_url": "/assets/bag.svg"
+    },
+    {
+      "image_id": 1161,
+      "product_id": 116,
+      "image_url": "/assets/speaker.svg"
+    },
+    {
+      "image_id": 1171,
+      "product_id": 117,
+      "image_url": "/assets/coffee.svg"
+    }
+  ],
+  "orders": [
+    {
+      "order_id": 201,
+      "product_id": 102,
+      "buyer_id": 1,
+      "snapshot_title": "二手显示器",
+      "deal_price_cents": 40000,
+      "shipping_fee_cents": 0,
+      "delivery_method": "自提",
+      "recipient_name": null,
+      "recipient_phone": null,
+      "recipient_address": null,
+      "order_status": "已完成",
+      "carrier": null,
+      "tracking_no": null,
+      "created_at": "2026-10-10 09:00:00"
+    },
+    {
+      "order_id": 202,
+      "product_id": 103,
+      "buyer_id": 2,
+      "snapshot_title": "算法导论",
+      "deal_price_cents": 5500,
+      "shipping_fee_cents": 600,
+      "delivery_method": "快递",
+      "recipient_name": "演示收件人2",
+      "recipient_phone": "19900000002",
+      "recipient_address": "重庆市北碚区虚构示例路2号",
+      "order_status": "待付款",
+      "carrier": null,
+      "tracking_no": null,
+      "created_at": "2026-10-18 15:00:00"
+    },
+    {
+      "order_id": 204,
+      "product_id": 105,
+      "buyer_id": 1,
+      "snapshot_title": "蓝牙耳机",
+      "deal_price_cents": 11000,
+      "shipping_fee_cents": 800,
+      "delivery_method": "快递",
+      "recipient_name": "演示收件人1",
+      "recipient_phone": "19900000001",
+      "recipient_address": "重庆市北碚区虚构示例路1号",
+      "order_status": "待收货",
+      "carrier": "演示快递",
+      "tracking_no": "DEMO_SHIP_204",
+      "created_at": "2026-10-14 09:00:00"
+    },
+    {
+      "order_id": 205,
+      "product_id": 106,
+      "buyer_id": 4,
+      "snapshot_title": "无线鼠标",
+      "deal_price_cents": 7000,
+      "shipping_fee_cents": 0,
+      "delivery_method": "自提",
+      "recipient_name": null,
+      "recipient_phone": null,
+      "recipient_address": null,
+      "order_status": "已退款",
+      "carrier": null,
+      "tracking_no": null,
+      "created_at": "2026-10-14 09:00:00"
+    },
+    {
+      "order_id": 206,
+      "product_id": 107,
+      "buyer_id": 5,
+      "snapshot_title": "无线路由器",
+      "deal_price_cents": 8500,
+      "shipping_fee_cents": 600,
+      "delivery_method": "快递",
+      "recipient_name": "演示收件人5",
+      "recipient_phone": "19900000005",
+      "recipient_address": "重庆市北碚区虚构示例路5号",
+      "order_status": "已取消",
+      "carrier": null,
+      "tracking_no": null,
+      "created_at": "2026-10-14 09:00:00"
+    }
+  ],
+  "conversations": [
+    {
+      "conversation_id": 301,
+      "initiator_id": 1,
+      "peer_id": 2,
+      "created_at": "2026-10-09 12:00:00"
+    },
+    {
+      "conversation_id": 302,
+      "initiator_id": 2,
+      "peer_id": 3,
+      "created_at": "2026-10-09 12:00:00"
+    }
+  ],
+  "messages": [
+    {
+      "message_id": 11,
+      "conversation_id": 301,
+      "sender_id": 1,
+      "content": "你好，商品还在吗？可以介绍一下使用情况吗？",
+      "sent_at": "2026-10-09 12:01:00"
+    },
+    {
+      "message_id": 12,
+      "conversation_id": 301,
+      "sender_id": 2,
+      "content": "还在，使用情况已写在描述里，交付方式可以协商。",
+      "sent_at": "2026-10-09 12:02:00"
+    },
+    {
+      "message_id": 21,
+      "conversation_id": 302,
+      "sender_id": 2,
+      "content": "你好，商品还在吗？可以介绍一下使用情况吗？",
+      "sent_at": "2026-10-09 12:01:00"
+    },
+    {
+      "message_id": 22,
+      "conversation_id": 302,
+      "sender_id": 3,
+      "content": "还在，使用情况已写在描述里，交付方式可以协商。",
+      "sent_at": "2026-10-09 12:02:00"
+    }
+  ],
+  "refunds": [
+    {
+      "refund_id": 402,
+      "order_id": 205,
+      "reason": "尚未交付，协商取消交易",
+      "refund_status": "退款成功",
+      "admin_id": null,
+      "admin_opinion": null,
+      "created_at": "2026-10-14 14:00:00"
+    }
+  ],
+  "reviews": [
+    {
+      "review_id": 601,
+      "order_id": 201,
+      "reviewer_id": 1,
+      "content": "显示器正常，自提很顺利。",
+      "created_at": "2026-10-13 15:00:00"
+    },
+    {
+      "review_id": 602,
+      "order_id": 201,
+      "reviewer_id": 2,
+      "content": "沟通及时，按约定时间到场。",
+      "created_at": "2026-10-13 15:00:00"
+    }
+  ],
+  "reports": [
+    {
+      "report_id": 503,
+      "reporter_id": 2,
+      "product_id": 106,
+      "reason": "描述疑似与图片不一致",
+      "report_status": "成立",
+      "admin_id": 2,
+      "handle_note": "信息存在问题，维持下架",
+      "created_at": "2026-10-16 10:00:00"
+    }
+  ],
+  "favorites": [
+    {
+      "user_id": 2,
+      "product_id": 101,
+      "favorited_at": "2026-10-17 18:00:00"
+    },
+    {
+      "user_id": 3,
+      "product_id": 101,
+      "favorited_at": "2026-10-17 18:00:00"
+    },
+    {
+      "user_id": 1,
+      "product_id": 107,
+      "favorited_at": "2026-10-17 18:00:00"
+    }
+  ]
+}

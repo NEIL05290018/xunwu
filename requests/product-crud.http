@@ -1,0 +1,59 @@
+@host = http://localhost:8080
+# 填写首次启动的示例用户密码，或使用自己注册的手机号与密码。
+@phone = 19900000001
+@password = ChangeUserPassword_2026
+
+### 1. 获取会话和 CSRF（IDEA HTTP Client 自动保留 Cookie）
+GET {{host}}/api/auth/session
+
+> {% client.global.set("csrf", response.body.csrf); %}
+
+### 2. 登录；登录成功后会话和 CSRF 都会轮换
+POST {{host}}/api/auth/login
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"account":"{{phone}}","password":"{{password}}","role":"USER"}
+
+> {% client.assert(response.status === 200, "登录成功"); client.global.set("csrf", response.body.csrf); %}
+
+### 3. 新增，201
+POST {{host}}/api/products
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"title":"CRUD 测试台灯","description":"功能正常，底座有轻微使用痕迹","price_cents":4500,"category":"生活用品","support_express":true,"support_pickup":true,"images":["/assets/lamp.svg"]}
+
+> {% client.assert(response.status === 201, "新增 201"); client.global.set("productId", response.body.product_id); %}
+
+### 4. 查询详情
+GET {{host}}/api/products/{{productId}}
+
+### 5. 查询自己的全部状态商品，默认市场不包含待审草稿
+GET {{host}}/api/products?scope=mine&category=生活用品&q=台灯
+
+### 6. 修改，200
+PUT {{host}}/api/products/{{productId}}
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"title":"CRUD 测试台灯（改价）","description":"功能正常，底座有轻微使用痕迹","price_cents":4000,"category":"生活用品","support_express":true,"support_pickup":true,"images":["/assets/lamp.svg"]}
+
+### 7. 删除，204 空响应
+DELETE {{host}}/api/products/{{productId}}
+X-CSRF-Token: {{csrf}}
+
+> {% client.assert(response.status === 204, "删除成功"); %}
+
+### 8. 再查询，404 空响应
+GET {{host}}/api/products/{{productId}}
+
+> {% client.assert(response.status === 404, "商品已不存在"); %}
+
+### 9. 重复删除，404
+DELETE {{host}}/api/products/{{productId}}
+X-CSRF-Token: {{csrf}}
+
+### 10. 退出
+POST {{host}}/api/auth/logout
+X-CSRF-Token: {{csrf}}

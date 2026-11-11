@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.demo.DemoApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-11T12:27:03.216Z" hostname="e1bb43164009" time="0.244">
+  <properties/>
+  <testcase name="contextLoads()" classname="com.example.demo.DemoApplicationTests" time="0.244"/>
+  <system-out><![CDATA[2026-11-11T12:27:02.802Z  INFO 3552 --- [xunwu-platform] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.example.demo.DemoApplicationTests]: DemoApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-11T12:27:02.804Z  INFO 3552 --- [xunwu-platform] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.example.demo.DemoApplication for test class com.example.demo.DemoApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-11-11T12:27:02.827Z  INFO 3552 --- [xunwu-platform] [    Test worker] com.example.demo.DemoApplicationTests    : Starting DemoApplicationTests using Java 21.0.13 with PID 3552 (started by agent in /workspace/work/xunwu-platform)
+2026-11-11T12:27:02.827Z  INFO 3552 --- [xunwu-platform] [    Test worker] com.example.demo.DemoApplicationTests    : The following 1 profile is active: "test"
+2026-11-11T12:27:03.045Z  INFO 3552 --- [xunwu-platform] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-11-11T12:27:03.066Z  INFO 3552 --- [xunwu-platform] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3aa63b53
+2026-11-11T12:27:03.067Z  INFO 3552 --- [xunwu-platform] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-11-11T12:27:03.154Z  INFO 3552 --- [xunwu-platform] [    Test worker] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-11-11T12:27:03.215Z  INFO 3552 --- [xunwu-platform] [    Test worker] com.example.demo.DemoApplicationTests    : Started DemoApplicationTests in 0.407 seconds (process running for 8.318)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

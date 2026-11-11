@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.demo.AuthAndPersistenceTests" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-11T12:26:58.824Z" hostname="e1bb43164009" time="3.973">
+  <properties/>
+  <testcase name="pickupCancelAndReportLifecycle()" classname="com.example.demo.AuthAndPersistenceTests" time="1.693"/>
+  <testcase name="databaseConstraintsAndRollbackAreReal()" classname="com.example.demo.AuthAndPersistenceTests" time="0.413"/>
+  <testcase name="registrationLoginLogoutAndIdentitySpoofing()" classname="com.example.demo.AuthAndPersistenceTests" time="0.602"/>
+  <testcase name="productCrudPersistsAndProtectsHistory()" classname="com.example.demo.AuthAndPersistenceTests" time="0.429"/>
+  <testcase name="builderAndRepositorySixMethods()" classname="com.example.demo.AuthAndPersistenceTests" time="0.285"/>
+  <testcase name="conversationMessagesPersistAndStayPrivate()" classname="com.example.demo.AuthAndPersistenceTests" time="0.259"/>
+  <testcase name="queryScopesExcludeOtherDrafts()" classname="com.example.demo.AuthAndPersistenceTests" time="0.283"/>
+  <system-out><![CDATA[12:26:55.846 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.demo.AuthAndPersistenceTests]: AuthAndPersistenceTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:26:55.977 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.demo.DemoApplication for test class com.example.demo.AuthAndPersistenceTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-11-11T12:26:56.555Z  INFO 3552 --- [xunwu-platform] [    Test worker] c.example.demo.AuthAndPersistenceTests   : Starting AuthAndPersistenceTests using Java 21.0.13 with PID 3552 (started by agent in /workspace/work/xunwu-platform)
+2026-11-11T12:26:56.557Z  INFO 3552 --- [xunwu-platform] [    Test worker] c.example.demo.AuthAndPersistenceTests   : The following 1 profile is active: "test"
+2026-11-11T12:26:57.812Z  INFO 3552 --- [xunwu-platform] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-11T12:26:58.027Z  INFO 3552 --- [xunwu-platform] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c931134
+2026-11-11T12:26:58.029Z  INFO 3552 --- [xunwu-platform] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-11T12:26:58.520Z  INFO 3552 --- [xunwu-platform] [    Test worker] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-11-11T12:26:58.766Z  INFO 3552 --- [xunwu-platform] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-11-11T12:26:58.767Z  INFO 3552 --- [xunwu-platform] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-11-11T12:26:58.769Z  INFO 3552 --- [xunwu-platform] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-11-11T12:26:58.810Z  INFO 3552 --- [xunwu-platform] [    Test worker] c.example.demo.AuthAndPersistenceTests   : Started AuthAndPersistenceTests in 2.657 seconds (process running for 3.913)
+]]></system-out>
+  <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/workspace/work/gradle-cache/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.17.8/f09415827a71be7ed621c7bd02550678f28bc81c/byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

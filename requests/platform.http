@@ -1,0 +1,61 @@
+@host = http://localhost:8080
+@password = ChangeUserPassword_2026
+@adminPassword = ChangeAdminPassword_2026
+
+### 取得 CSRF
+GET {{host}}/api/auth/session
+
+> {% client.global.set("csrf", response.body.csrf); %}
+
+### 普通用户登录
+POST {{host}}/api/auth/login
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"account":"19900000001","password":"{{password}}","role":"USER"}
+
+> {% client.global.set("csrf", response.body.csrf); %}
+
+### 按身份过滤的数据
+GET {{host}}/api/market
+
+### 市场列表
+GET {{host}}/api/products
+
+### 我的订单
+GET {{host}}/api/orders
+
+### 与用户 2 建立/查找会话
+POST {{host}}/api/conversations
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"peer_id":2}
+
+> {% client.global.set("conversationId", response.body.conversation_id); %}
+
+### 发消息
+POST {{host}}/api/conversations/{{conversationId}}/messages
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"content":"你好，商品还在吗？"}
+
+### 切换到管理员（会轮换会话，原普通用户会话失效）
+POST {{host}}/api/auth/login
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"account":"admin01","password":"{{adminPassword}}","role":"ADMIN"}
+
+> {% client.global.set("csrf", response.body.csrf); %}
+
+### 管理视图
+GET {{host}}/api/market
+
+### 审核商品：把 111 换成实际待审商品编号
+PUT {{host}}/api/admin/products/111/audit
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"agree":true,"note":"信息完整，审核通过"}
