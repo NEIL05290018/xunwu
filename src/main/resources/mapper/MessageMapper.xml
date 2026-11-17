@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.MessageMapper">
+  <resultMap id="row" type="com.example.demo.model.Message">
+    <id column="message_id" property="message_id"/>
+    <result column="conversation_id" property="conversation_id"/>
+    <result column="sender_id" property="sender_id"/>
+    <result column="content" property="content"/>
+    <result column="sent_at" property="sent_at"/>
+  </resultMap>
+  <sql id="columns">message_id,conversation_id,sender_id,content,sent_at</sql>
+  <select id="findAll" resultMap="row">SELECT <include refid="columns"/> FROM `messages` ORDER BY message_id</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="message_id" keyColumn="message_id">INSERT INTO `messages` (message_id,conversation_id,sender_id,content,sent_at) VALUES (#{message_id},#{conversation_id},#{sender_id},#{content},#{sent_at})</insert>
+  <select id="findById" resultMap="row">SELECT <include refid="columns"/> FROM `messages` WHERE message_id=#{id}</select>
+  <update id="update">UPDATE `messages` SET conversation_id=#{conversation_id},sender_id=#{sender_id},content=#{content},sent_at=#{sent_at} WHERE message_id=#{message_id}</update>
+  <delete id="deleteById">DELETE FROM `messages` WHERE message_id=#{id}</delete>
+</mapper>

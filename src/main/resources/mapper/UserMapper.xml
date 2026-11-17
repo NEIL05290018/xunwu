@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserMapper">
+  <resultMap id="row" type="com.example.demo.model.User">
+    <id column="user_id" property="user_id"/>
+    <result column="nickname" property="nickname"/>
+    <result column="phone" property="phone"/>
+    <result column="account_status" property="account_status"/>
+    <result column="password_hash" property="password_hash"/>
+  </resultMap>
+  <sql id="columns">user_id,nickname,phone,account_status,password_hash</sql>
+  <select id="findAll" resultMap="row">SELECT <include refid="columns"/> FROM `users` ORDER BY user_id</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="user_id" keyColumn="user_id">INSERT INTO `users` (user_id,nickname,phone,account_status,password_hash) VALUES (#{user_id},#{nickname},#{phone},#{account_status},#{password_hash})</insert>
+  <select id="findById" resultMap="row">SELECT <include refid="columns"/> FROM `users` WHERE user_id=#{id}</select>
+  <update id="update">UPDATE `users` SET nickname=#{nickname},phone=#{phone},account_status=#{account_status},password_hash=#{password_hash} WHERE user_id=#{user_id}</update>
+  <delete id="deleteById">DELETE FROM `users` WHERE user_id=#{id}</delete>
+  <select id="findByPhone" resultMap="row">SELECT <include refid="columns"/> FROM users WHERE phone=#{phone}</select>
+  <select id="lockById" resultMap="row">SELECT <include refid="columns"/> FROM users WHERE user_id=#{id} FOR UPDATE</select>
+</mapper>

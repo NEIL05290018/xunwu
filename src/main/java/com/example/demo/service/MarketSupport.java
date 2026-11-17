@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 /** 各业务服务共享的查找、输入检查和 DTO 转换。 */
 public abstract class MarketSupport {
@@ -74,51 +73,37 @@ public abstract class MarketSupport {
     return false;
   }
 
-  protected static int nextTradeOrderId(List<TradeOrder> values) {
-    int max = 0;
-    for (TradeOrder x : values) max = Math.max(max, x.order_id);
-    return max + 1;
+  protected User user(int id) {
+    User u = repository.user().findById(id);
+    require(u != null, NOT_FOUND, "用户不存在");
+    require("正常".equals(u.account_status), FORBIDDEN, "账号已停用");
+    return u;
   }
 
-  protected static int nextRefundId(List<Refund> values) {
-    int max = 0;
-    for (Refund x : values) max = Math.max(max, x.refund_id);
-    return max + 1;
+  protected void admin(int id) {
+    require(repository.admin().findById(id) != null, FORBIDDEN, "管理员不存在");
   }
 
-  protected static int nextReviewId(List<Review> values) {
-    int max = 0;
-    for (Review x : values) max = Math.max(max, x.review_id);
-    return max + 1;
+  protected Product product(int id) {
+    Product p = repository.product().findById(id);
+    require(p != null, NOT_FOUND, "商品不存在");
+    return p;
   }
 
-  protected static int nextProductImageId(List<ProductImage> values) {
-    int max = 0;
-    for (ProductImage x : values) max = Math.max(max, x.image_id);
-    return max + 1;
+  protected Product lockProduct(int id) {
+    Product p = repository.product().lockById(id);
+    require(p != null, NOT_FOUND, "商品不存在");
+    return p;
   }
 
-  protected static int nextAddressId(List<Address> values) {
-    int max = 0;
-    for (Address x : values) max = Math.max(max, x.address_id);
-    return max + 1;
+  protected TradeOrder lockOrder(int id) {
+    TradeOrder o = repository.tradeOrder().lockById(id);
+    require(o != null, NOT_FOUND, "订单不存在");
+    return o;
   }
 
-  protected static int nextConversationId(List<Conversation> values) {
-    int max = 0;
-    for (Conversation x : values) max = Math.max(max, x.conversation_id);
-    return max + 1;
-  }
-
-  protected static int nextMessageId(List<Message> values) {
-    int max = 0;
-    for (Message x : values) max = Math.max(max, x.message_id);
-    return max + 1;
-  }
-
-  protected static int nextReportId(List<Report> values) {
-    int max = 0;
-    for (Report x : values) max = Math.max(max, x.report_id);
-    return max + 1;
+  protected boolean pendingRefund(int id) {
+    Refund r = repository.refund().findByOrder(id);
+    return r != null && "待处理".equals(r.refund_status);
   }
 }

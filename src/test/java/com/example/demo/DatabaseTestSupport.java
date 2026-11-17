@@ -45,6 +45,10 @@ abstract class DatabaseTestSupport {
                   columns.add(entry.getKey());
                   values.add(testMapper.convertValue(entry.getValue(), Object.class));
                 });
+        if (table.equals("users") || table.equals("admins")) {
+          columns.add("password_hash");
+          values.add("test-placeholder");
+        }
         jdbc.update(
             "INSERT INTO `"
                 + table

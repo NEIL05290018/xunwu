@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ReportMapper">
+  <resultMap id="row" type="com.example.demo.model.Report">
+    <id column="report_id" property="report_id"/>
+    <result column="reporter_id" property="reporter_id"/>
+    <result column="product_id" property="product_id"/>
+    <result column="reason" property="reason"/>
+    <result column="report_status" property="report_status"/>
+    <result column="admin_id" property="admin_id"/>
+    <result column="handle_note" property="handle_note"/>
+    <result column="created_at" property="created_at"/>
+  </resultMap>
+  <sql id="columns">report_id,reporter_id,product_id,reason,report_status,admin_id,handle_note,created_at</sql>
+  <select id="findAll" resultMap="row">SELECT <include refid="columns"/> FROM `reports` ORDER BY report_id</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="report_id" keyColumn="report_id">INSERT INTO `reports` (report_id,reporter_id,product_id,reason,report_status,admin_id,handle_note,created_at) VALUES (#{report_id},#{reporter_id},#{product_id},#{reason},#{report_status},#{admin_id},#{handle_note},#{created_at})</insert>
+  <select id="findById" resultMap="row">SELECT <include refid="columns"/> FROM `reports` WHERE report_id=#{id}</select>
+  <update id="update">UPDATE `reports` SET reporter_id=#{reporter_id},product_id=#{product_id},reason=#{reason},report_status=#{report_status},admin_id=#{admin_id},handle_note=#{handle_note},created_at=#{created_at} WHERE report_id=#{report_id}</update>
+  <delete id="deleteById">DELETE FROM `reports` WHERE report_id=#{id}</delete>
+  <select id="upheldCount" resultType="int">SELECT COUNT(*) FROM reports WHERE product_id=#{id} AND report_status='成立'</select>
+  <select id="lockById" resultMap="row">SELECT <include refid="columns"/> FROM reports WHERE report_id=#{id} FOR UPDATE</select>
+</mapper>

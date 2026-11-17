@@ -17,6 +17,9 @@ public class AccountService extends MarketSupport {
     super(repository, mapper);
   }
 
+  @org.springframework.transaction.annotation.Transactional(
+      readOnly = true,
+      isolation = org.springframework.transaction.annotation.Isolation.REPEATABLE_READ)
   public Bootstrap bootstrap(int uid, Integer aid) {
     MarketState s = repository.snapshot();
     if (aid != null) {
@@ -79,29 +82,23 @@ public class AccountService extends MarketSupport {
     return dto(s, Bootstrap.class);
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public AddressResponse address(int uid, Integer id, AddressInput input) {
-    return repository.transaction(
-        new MarketRepository.Operation<AddressResponse>() {
-          @Override
-          public AddressResponse apply(MarketState s) {
-            user(s, uid);
-            Address a;
-            if (id == null) {
-              a = new Address();
-              a.address_id = nextAddressId(s.addresses);
-              a.user_id = uid;
-            } else {
-              a = null;
-              for (Address x : s.addresses) if (x.address_id.equals(id)) a = x;
-              require(a != null, NOT_FOUND, "地址不存在");
-              require(a.user_id == uid, FORBIDDEN, "只能修改自己的地址");
-            }
-            a.recipient_name = text(input.recipient_name(), 80);
-            a.recipient_phone = text(input.recipient_phone(), 80);
-            a.detail_address = text(input.detail_address(), 200);
-            if (id == null) s.addresses.add(a);
-            return dto(a, AddressResponse.class);
-          }
-        });
+    user(uid);
+    Address a;
+    if (id == null) {
+      a = new Address();
+      a.user_id = uid;
+    } else {
+      a = repository.address().findById(id);
+      require(a != null, NOT_FOUND, "地址不存在");
+      require(a.user_id == uid, FORBIDDEN, "只能修改自己的地址");
+    }
+    a.recipient_name = text(input.recipient_name(), 80);
+    a.recipient_phone = text(input.recipient_phone(), 80);
+    a.detail_address = text(input.detail_address(), 200);
+    if (id == null) repository.address().insert(a);
+    else repository.address().update(a);
+    return dto(a, AddressResponse.class);
   }
 }
