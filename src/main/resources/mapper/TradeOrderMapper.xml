@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.TradeOrderMapper">
+  <resultMap id="row" type="com.example.demo.model.TradeOrder">
+    <id column="order_id" property="order_id"/>
+    <result column="product_id" property="product_id"/>
+    <result column="buyer_id" property="buyer_id"/>
+    <result column="snapshot_title" property="snapshot_title"/>
+    <result column="deal_price_cents" property="deal_price_cents"/>
+    <result column="shipping_fee_cents" property="shipping_fee_cents"/>
+    <result column="delivery_method" property="delivery_method"/>
+    <result column="recipient_name" property="recipient_name"/>
+    <result column="recipient_phone" property="recipient_phone"/>
+    <result column="recipient_address" property="recipient_address"/>
+    <result column="order_status" property="order_status"/>
+    <result column="carrier" property="carrier"/>
+    <result column="tracking_no" property="tracking_no"/>
+    <result column="created_at" property="created_at"/>
+  </resultMap>
+  <sql id="columns">order_id,product_id,buyer_id,snapshot_title,deal_price_cents,shipping_fee_cents,delivery_method,recipient_name,recipient_phone,recipient_address,order_status,carrier,tracking_no,created_at</sql>
+  <select id="findAll" resultMap="row">SELECT <include refid="columns"/> FROM `orders` ORDER BY order_id</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="order_id" keyColumn="order_id">INSERT INTO `orders` (order_id,product_id,buyer_id,snapshot_title,deal_price_cents,shipping_fee_cents,delivery_method,recipient_name,recipient_phone,recipient_address,order_status,carrier,tracking_no,created_at) VALUES (#{order_id},#{product_id},#{buyer_id},#{snapshot_title},#{deal_price_cents},#{shipping_fee_cents},#{delivery_method},#{recipient_name},#{recipient_phone},#{recipient_address},#{order_status},#{carrier},#{tracking_no},#{created_at})</insert>
+  <select id="findById" resultMap="row">SELECT <include refid="columns"/> FROM `orders` WHERE order_id=#{id}</select>
+  <update id="update">UPDATE `orders` SET product_id=#{product_id},buyer_id=#{buyer_id},snapshot_title=#{snapshot_title},deal_price_cents=#{deal_price_cents},shipping_fee_cents=#{shipping_fee_cents},delivery_method=#{delivery_method},recipient_name=#{recipient_name},recipient_phone=#{recipient_phone},recipient_address=#{recipient_address},order_status=#{order_status},carrier=#{carrier},tracking_no=#{tracking_no},created_at=#{created_at} WHERE order_id=#{order_id}</update>
+  <delete id="deleteById">DELETE FROM `orders` WHERE order_id=#{id}</delete>
+  <select id="lockById" resultMap="row">SELECT <include refid="columns"/> FROM orders WHERE order_id=#{id} FOR UPDATE</select>
+  <select id="activeCount" resultType="int">SELECT COUNT(*) FROM orders WHERE product_id=#{id} AND order_status NOT IN ('已取消','已退款')</select>
+</mapper>

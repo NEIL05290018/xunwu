@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.AdminMapper">
+  <resultMap id="row" type="com.example.demo.model.Admin">
+    <id column="admin_id" property="admin_id"/>
+    <result column="login_name" property="login_name"/>
+    <result column="password_hash" property="password_hash"/>
+  </resultMap>
+  <sql id="columns">admin_id,login_name,password_hash</sql>
+  <select id="findAll" resultMap="row">SELECT <include refid="columns"/> FROM `admins` ORDER BY admin_id</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="admin_id" keyColumn="admin_id">INSERT INTO `admins` (admin_id,login_name,password_hash) VALUES (#{admin_id},#{login_name},#{password_hash})</insert>
+  <select id="findById" resultMap="row">SELECT <include refid="columns"/> FROM `admins` WHERE admin_id=#{id}</select>
+  <update id="update">UPDATE `admins` SET login_name=#{login_name},password_hash=#{password_hash} WHERE admin_id=#{admin_id}</update>
+  <delete id="deleteById">DELETE FROM `admins` WHERE admin_id=#{id}</delete>
+  <select id="findByLoginName" resultMap="row">SELECT <include refid="columns"/> FROM admins WHERE login_name=#{login}</select>
+</mapper>

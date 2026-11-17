@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 class AuthAndPersistenceTests extends DatabaseTestSupport {
   @Autowired MockMvc mvc;
   @Autowired MarketRepository market;
+  @Autowired org.springframework.transaction.support.TransactionTemplate transactions;
+  @Autowired com.example.demo.service.CatalogService catalog;
   @Autowired ProductRepository products;
   private static final String INPUT =
       """
@@ -170,7 +172,15 @@ class AuthAndPersistenceTests extends DatabaseTestSupport {
                 .header("X-CSRF-Token", "test-csrf"))
         .andExpect(status().isNotFound())
         .andExpect(content().string(""));
-    assertTrue(market.allocateProductId() > id);
+    assertTrue(
+        catalog
+                .save(
+                    1,
+                    null,
+                    new com.example.demo.dto.MarketRequests.ProductInput(
+                        "新商品", "用于验证编号", 100, "生活用品", true, true, java.util.List.of()))
+                .product_id()
+            > id);
     int historical = jdbc.queryForObject("SELECT product_id FROM orders LIMIT 1", Integer.class);
     int seller =
         jdbc.queryForObject(
@@ -193,7 +203,7 @@ class AuthAndPersistenceTests extends DatabaseTestSupport {
     assertThrows(
         IllegalStateException.class,
         () ->
-            market.transaction(
+            transactions.execute(
                 s -> {
                   jdbc.update("UPDATE products SET title='不应保存' WHERE product_id=101");
                   throw new IllegalStateException("rollback");

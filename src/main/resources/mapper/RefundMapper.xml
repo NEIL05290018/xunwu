@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.RefundMapper">
+  <resultMap id="row" type="com.example.demo.model.Refund">
+    <id column="refund_id" property="refund_id"/>
+    <result column="order_id" property="order_id"/>
+    <result column="reason" property="reason"/>
+    <result column="refund_status" property="refund_status"/>
+    <result column="admin_id" property="admin_id"/>
+    <result column="admin_opinion" property="admin_opinion"/>
+    <result column="created_at" property="created_at"/>
+  </resultMap>
+  <sql id="columns">refund_id,order_id,reason,refund_status,admin_id,admin_opinion,created_at</sql>
+  <select id="findAll" resultMap="row">SELECT <include refid="columns"/> FROM `refunds` ORDER BY refund_id</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="refund_id" keyColumn="refund_id">INSERT INTO `refunds` (refund_id,order_id,reason,refund_status,admin_id,admin_opinion,created_at) VALUES (#{refund_id},#{order_id},#{reason},#{refund_status},#{admin_id},#{admin_opinion},#{created_at})</insert>
+  <select id="findById" resultMap="row">SELECT <include refid="columns"/> FROM `refunds` WHERE refund_id=#{id}</select>
+  <update id="update">UPDATE `refunds` SET order_id=#{order_id},reason=#{reason},refund_status=#{refund_status},admin_id=#{admin_id},admin_opinion=#{admin_opinion},created_at=#{created_at} WHERE refund_id=#{refund_id}</update>
+  <delete id="deleteById">DELETE FROM `refunds` WHERE refund_id=#{id}</delete>
+  <select id="findByOrder" resultMap="row">SELECT <include refid="columns"/> FROM refunds WHERE order_id=#{id}</select>
+<select id="lockById" resultMap="row">SELECT <include refid="columns"/> FROM refunds WHERE refund_id=#{id} FOR UPDATE</select>
+</mapper>

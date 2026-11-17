@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ReviewMapper">
+  <resultMap id="row" type="com.example.demo.model.Review">
+    <id column="review_id" property="review_id"/>
+    <result column="order_id" property="order_id"/>
+    <result column="reviewer_id" property="reviewer_id"/>
+    <result column="content" property="content"/>
+    <result column="created_at" property="created_at"/>
+  </resultMap>
+  <sql id="columns">review_id,order_id,reviewer_id,content,created_at</sql>
+  <select id="findAll" resultMap="row">SELECT <include refid="columns"/> FROM `reviews` ORDER BY review_id</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="review_id" keyColumn="review_id">INSERT INTO `reviews` (review_id,order_id,reviewer_id,content,created_at) VALUES (#{review_id},#{order_id},#{reviewer_id},#{content},#{created_at})</insert>
+  <select id="findById" resultMap="row">SELECT <include refid="columns"/> FROM `reviews` WHERE review_id=#{id}</select>
+  <update id="update">UPDATE `reviews` SET order_id=#{order_id},reviewer_id=#{reviewer_id},content=#{content},created_at=#{created_at} WHERE review_id=#{review_id}</update>
+  <delete id="deleteById">DELETE FROM `reviews` WHERE review_id=#{id}</delete>
+  <select id="countByAuthor" resultType="int">SELECT COUNT(*) FROM reviews WHERE order_id=#{order} AND reviewer_id=#{user}</select>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ProductMapper">
+  <resultMap id="row" type="com.example.demo.model.Product">
+    <id column="product_id" property="product_id"/>
+    <result column="seller_id" property="seller_id"/>
+    <result column="title" property="title"/>
+    <result column="description" property="description"/>
+    <result column="price_cents" property="price_cents"/>
+    <result column="category" property="category"/>
+    <result column="support_express" property="support_express"/>
+    <result column="support_pickup" property="support_pickup"/>
+    <result column="product_status" property="product_status"/>
+    <result column="audit_status" property="audit_status"/>
+    <result column="audit_admin_id" property="audit_admin_id"/>
+    <result column="audit_note" property="audit_note"/>
+  </resultMap>
+  <sql id="columns">product_id,seller_id,title,description,price_cents,category,support_express,support_pickup,product_status,audit_status,audit_admin_id,audit_note</sql>
+  <select id="findAll" resultMap="row">SELECT <include refid="columns"/> FROM `products` ORDER BY product_id</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="product_id" keyColumn="product_id">INSERT INTO `products` (product_id,seller_id,title,description,price_cents,category,support_express,support_pickup,product_status,audit_status,audit_admin_id,audit_note) VALUES (#{product_id},#{seller_id},#{title},#{description},#{price_cents},#{category},#{support_express},#{support_pickup},#{product_status},#{audit_status},#{audit_admin_id},#{audit_note})</insert>
+  <select id="findById" resultMap="row">SELECT <include refid="columns"/> FROM `products` WHERE product_id=#{id}</select>
+  <update id="update">UPDATE `products` SET seller_id=#{seller_id},title=#{title},description=#{description},price_cents=#{price_cents},category=#{category},support_express=#{support_express},support_pickup=#{support_pickup},product_status=#{product_status},audit_status=#{audit_status},audit_admin_id=#{audit_admin_id},audit_note=#{audit_note} WHERE product_id=#{product_id}</update>
+  <delete id="deleteById">DELETE FROM `products` WHERE product_id=#{id}</delete>
+  <select id="lockById" resultMap="row">SELECT <include refid="columns"/> FROM products WHERE product_id=#{id} FOR UPDATE</select>
+  <select id="findByCategory" resultMap="row">SELECT <include refid="columns"/> FROM products WHERE category=#{category} ORDER BY product_id</select>
+  <select id="search" resultMap="row">SELECT <include refid="columns"/> FROM products
+    <where>
+      <choose>
+        <when test="scope == 'mine'">seller_id=#{uid}</when>
+        <when test="scope == 'all'">(seller_id=#{uid} OR audit_status='通过')</when>
+        <otherwise>audit_status='通过' AND product_status='在售'</otherwise>
+      </choose>
+      <if test="category != null and category != ''">AND category=#{category}</if>
+      <if test="keyword != null and keyword != ''">AND LOCATE(LOWER(#{keyword}),LOWER(CONCAT(title,description))) &gt; 0</if>
+    </where> ORDER BY product_id</select>
+  <select id="historyCount" resultType="int">SELECT (SELECT COUNT(*) FROM orders WHERE product_id=#{id})+(SELECT COUNT(*) FROM reports WHERE product_id=#{id})</select>
+</mapper>

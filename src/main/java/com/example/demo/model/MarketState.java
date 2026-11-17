@@ -3,7 +3,7 @@ package com.example.demo.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 12 张数据库表的一次事务工作副本，不包含额外关系表。 */
+/** 十二表查询结果的聚合容器；用于页面响应与首次种子，不能写回数据库，不包含额外关系表。 */
 public class MarketState {
   public List<Admin> admins = new ArrayList<>();
   public List<User> users = new ArrayList<>();

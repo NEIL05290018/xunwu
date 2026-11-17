@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ConversationMapper">
+  <resultMap id="row" type="com.example.demo.model.Conversation">
+    <id column="conversation_id" property="conversation_id"/>
+    <result column="initiator_id" property="initiator_id"/>
+    <result column="peer_id" property="peer_id"/>
+    <result column="created_at" property="created_at"/>
+  </resultMap>
+  <sql id="columns">conversation_id,initiator_id,peer_id,created_at</sql>
+  <select id="findAll" resultMap="row">SELECT <include refid="columns"/> FROM `conversations` ORDER BY conversation_id</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="conversation_id" keyColumn="conversation_id">INSERT INTO `conversations` (conversation_id,initiator_id,peer_id,created_at) VALUES (#{conversation_id},#{initiator_id},#{peer_id},#{created_at})</insert>
+  <select id="findById" resultMap="row">SELECT <include refid="columns"/> FROM `conversations` WHERE conversation_id=#{id}</select>
+  <update id="update">UPDATE `conversations` SET initiator_id=#{initiator_id},peer_id=#{peer_id},created_at=#{created_at} WHERE conversation_id=#{conversation_id}</update>
+  <delete id="deleteById">DELETE FROM `conversations` WHERE conversation_id=#{id}</delete>
+  <select id="findPair" resultMap="row">SELECT <include refid="columns"/> FROM conversations WHERE (initiator_id=#{first} AND peer_id=#{second}) OR (initiator_id=#{second} AND peer_id=#{first})</select>
+</mapper>

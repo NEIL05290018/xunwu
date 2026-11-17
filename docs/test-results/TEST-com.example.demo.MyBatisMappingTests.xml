@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="com.example.demo.MyBatisMappingTests" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-17T01:20:51.686Z" hostname="b5d147216b2c" time="2.948">
+  <testcase name="generatedKeyAndDatabaseImageFailureRollback()" classname="com.example.demo.MyBatisMappingTests" time="1.574" />
+  <testcase name="actualInitiatorAndConcurrentReverseConversation()" classname="com.example.demo.MyBatisMappingTests" time="0.296" />
+  <testcase name="pickupTradeCompletes()" classname="com.example.demo.MyBatisMappingTests" time="0.301" />
+  <testcase name="selfPickupAndShippingDatabaseConstraints()" classname="com.example.demo.MyBatisMappingTests" time="0.243" />
+  <testcase name="credentialsAreMappedButNeverSerialized()" classname="com.example.demo.MyBatisMappingTests" time="0.282" />
+  <testcase name="dynamicSqlBindsValuesAndMapsFields()" classname="com.example.demo.MyBatisMappingTests" time="0.243" />
+  </testsuite>

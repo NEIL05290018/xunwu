@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.AddressMapper">
+  <resultMap id="row" type="com.example.demo.model.Address">
+    <id column="address_id" property="address_id"/>
+    <result column="user_id" property="user_id"/>
+    <result column="recipient_name" property="recipient_name"/>
+    <result column="recipient_phone" property="recipient_phone"/>
+    <result column="detail_address" property="detail_address"/>
+  </resultMap>
+  <sql id="columns">address_id,user_id,recipient_name,recipient_phone,detail_address</sql>
+  <select id="findAll" resultMap="row">SELECT <include refid="columns"/> FROM `addresses` ORDER BY address_id</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="address_id" keyColumn="address_id">INSERT INTO `addresses` (address_id,user_id,recipient_name,recipient_phone,detail_address) VALUES (#{address_id},#{user_id},#{recipient_name},#{recipient_phone},#{detail_address})</insert>
+  <select id="findById" resultMap="row">SELECT <include refid="columns"/> FROM `addresses` WHERE address_id=#{id}</select>
+  <update id="update">UPDATE `addresses` SET user_id=#{user_id},recipient_name=#{recipient_name},recipient_phone=#{recipient_phone},detail_address=#{detail_address} WHERE address_id=#{address_id}</update>
+  <delete id="deleteById">DELETE FROM `addresses` WHERE address_id=#{id}</delete>
+</mapper>

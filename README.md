@@ -1,85 +1,128 @@
-# 循物二手交易平台 v3.0.0 · Java + MySQL 课程版
+# 循物二手交易平台 v4.0.0 · Spring Boot + MyBatis + MySQL
 
-在上传的 v2.0 源码上续做，并依据两份交接文档补齐 v2.1 的商品练习要求，再增加 MySQL 持久化和注册登录。前端仍为 HTML/CSS/原生 JavaScript，后端仍为 Spring Boot 分层 REST。
+从 v3.0 JdbcTemplate 版升级为 **Mapper 接口 + Mapper XML + Service 事务**。JDK 17、Gradle Wrapper 8.14.3、Spring Boot 3.5.16、MyBatis Starter 3.0.4、MySQL 8.0.16+（推荐 8.4）。前端继续使用原生 HTML/CSS/JavaScript。
 
-## 快速运行（Windows / IDEA）
+**先看完整交接：[`二手交易平台-v4.0-完整交接文档.md`](二手交易平台-v4.0-完整交接文档.md)**。
 
-需要 **JDK 17 或 21、MySQL 8.0.16 以上（推荐 MySQL 8.4）**。交付 JAR 可直接运行；仅运行项目不需要 Node、全局 Gradle 或 Docker。
+## 1. 拉取代码
 
-1. 解压到新目录，避免与旧版混合。保留 `release/xunwu-demo-3.0.0.jar`。
-2. 在 MySQL Workbench / IDEA Database / MySQL 命令行连接本机 MySQL。修改 `database/create-database.sql` 中的示例密码，然后执行此文件，创建 `xunwu` 库及应用账号。应用自动创建十二张表。
-3. 复制 `.env.example` 为 `.env`，填写实际 `DB_USER`、`DB_PASSWORD`、`DB_URL`，修改管理员和示例用户初始密码。`.env` 不提交、不传给别人。
-4. 在项目目录的 PowerShell 执行 `powershell -ExecutionPolicy Bypass -File .\start.ps1`。该参数只针对这次脚本进程，不修改系统执行策略。Linux/macOS 执行 `./start.sh`。
-5. 等待 `Started DemoApplication`，浏览器访问 **http://localhost:8080**。不要双击 HTML。
+停止正在运行的旧版程序，在项目根目录执行：
 
-### 登录账号
+```powershell
+git status
+git pull --ff-only origin main
+```
 
-- 管理员：登录页点“管理员”，账号 `admin01`，密码为**首次启动时**的 `XUNWU_ADMIN_PASSWORD`。
-- 示例用户：首次设置 `XUNWU_SEED_DEMO=true` 时，手机号 `19900000001` 至 `19900000005`，密码为首次的 `XUNWU_DEMO_PASSWORD`。
-- 新用户：点击“注册账号”，填写昵称、手机号和 8—72 位密码。买家卖家统一为普通用户。
-- `XUNWU_SEED_DEMO=false` 可从空市场开始。管理员仍会创建，用户自行注册。
-- 重启不会重置数据或密码；修改 `.env` 的初始密码不会修改已存在账号。不要为了切换账号删除数据库。
-- 数据库密码、用户登录密码、管理员登录密码是三种不同的密码。
+有本地修改时先检查、提交或暂存，不要直接强制覆盖。IDEA 中也可以使用 Git → Pull。Gradle JVM 和 Project SDK 都选 JDK 17，分发选 Wrapper，重新加载 Gradle。
 
-### 在 IntelliJ IDEA 修改和运行
+GitHub 只同步代码，不同步 MySQL 业务数据和 `.env`。首次克隆地址：`https://github.com/NEIL05290018/xunwu.git`。
 
-打开包含 `build.gradle` 的项目根目录，Project SDK 和 Gradle JVM 选 JDK 17/21，使用项目 Gradle Wrapper 同步。运行 `com.example.demo.DemoApplication`。
+## 2. 本机创建 MySQL 数据库
 
-**IDEA 直接运行 Java 不会自动读取 `.env`**：在 Run Configuration 的 Environment variables 填入 `.env` 的键值（无需注释），或使用支持 env 文件的 IDE 配置功能。启动脚本会自动读取 `.env`。Gradle 首次同步需要网络。
+用 MySQL Workbench、IDEA Database 或命令行连接自己的 MySQL 服务，先执行 `SELECT VERSION();`。
 
-构建 JAR：`./gradlew bootJar`（Windows 使用 `gradlew.bat`），产物在 `build/libs/`。替换 `release/` 中同名 JAR 前先停止运行中的程序，再启动；不要一边覆盖 JAR 一边继续访问旧进程。
+### 从空数据库开始（推荐首次部署）
 
-## 已完成
+打开 `database/create-database.sql`，把内容复制到 SQL 查询窗口，在窗口中修改数据库账号示例密码，再执行。不要把真实密码写回仓库中的 SQL。该脚本创建 `xunwu` 数据库与应用账号；应用首次启动自动执行 `src/main/resources/db/schema.sql`，创建十二张表。
 
-- 注册、登录、退出、用户/管理员分权；PBKDF2 随机盐密码哈希、HttpOnly 会话 Cookie、CSRF 校验；旧 `X-Demo-User/Admin` 请求头不再有效。
-- 商品查询、分类、关键词、market/all/mine 范围、新增、编辑、审核、删除；Builder、ProductRepository 六方法及构造注入。
-- 多图（最多 4 张，每张约 1 MB；存储在 MySQL 的图片文本字段）、收藏、个人地址。
-- 快递/自提订单、模拟付款、取消、发货、收货、整单退款、双方文字评价、会话消息、举报处理。
-- MySQL 十二张表，外键、唯一约束、CHECK、事务回滚与数据库行锁。服务器重启后业务数据保留。
-- 桌面和手机布局，中文界面；Java 应用集合处理使用普通循环，事务使用自定义 Operation 与匿名内部类。
+如果电脑已经有旧 `xunwu` 库且不需要复用，可**新建另一个库**（例如 `xunwu_v4`），相应修改建库/授权 SQL 和 `.env` 中的 DB_URL。不要直接删除旧库。
 
-支付、物流、退款到账仍为课程状态模拟；聊天为请求刷新而非 WebSocket 推送。未实现找回密码、线上支付或互联网生产部署。
+### 继续使用 v3.0 已有数据
 
-## 数据库与报告边界
+停止旧程序，先备份数据库，选中 v3.0 的 MySQL 数据库，执行一次 `database/migrate-v3-to-v4.sql`。脚本保留业务记录和密码，调整会话唯一键及补充报告中的约束。DDL 会自动提交，若中途报错需按已执行步骤处理，不能盲目整份重跑。
 
-本轮只有源码与两份交接文档，没有收到最终实验报告原件、ER 图或旧 SQL。实现依据现有 12 个模型和交接约束；**不声称已与原报告逐字段核对**。
+此脚本**不适用于本次上传的 SQLite 十三表旧 SQL**。v4 启动会检查会话新结构，未升级会明确报错，不会自动重建或清空旧库。
 
-保留十二张业务表，不新增成色、评分、管理员姓名或会话商品关联表。为登录新增 `users.password_hash`、`admins.password_hash`；为数据库防止重复有效订单新增 `orders.active_product_id` 生成列与唯一索引。字段细节见 `docs/数据库设计.md`。
+## 3. 配置 .env
 
-## 测试
+把根目录 `.env.example` 复制为 `.env`（不是 `.env.txt`），填写：
 
-自动测试会清空并重建夹具，**必须使用独立数据库**，名称以 `_test` 结尾。先建立 `xunwu_test`，授予测试账号该库权限，然后设置 `TEST_DB_USER`、`TEST_DB_PASSWORD`；如有需要设置 `TEST_DB_URL`。默认测试地址为本机 3306 的 `xunwu_test`，不会使用 `.env` 的业务库。
+```properties
+DB_URL=jdbc:mysql://localhost:3306/xunwu?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8
+DB_USER=xunwu
+DB_PASSWORD=你为数据库账号设置的密码
+PORT=8080
+XUNWU_ADMIN_PASSWORD=你设置的管理员初始密码
+XUNWU_SEED_DEMO=true
+XUNWU_DEMO_PASSWORD=你设置的示例用户初始密码
+```
 
-PowerShell：
+网站密码需要 8—72 个字符。数据库密码、网站管理员密码、普通用户密码是不同用途。
+
+**v4 新增：IDEA 从项目根目录直接运行主类，会自动读取 `.env`。** 检查运行配置 Working directory 为包含 build.gradle 的根目录。系统/运行配置里已有的同名环境变量优先于 `.env`；旧配置有错误时需同步修改或移除。`.env` 已被 Git 忽略。
+
+上述 URL 关闭 TLS 仅用于本机课程开发。远程数据库需要按服务端要求配置 TLS，不能直接沿用本机连接参数。
+
+## 4. 启动
+
+### IDEA 运行源码（学习、修改时推荐）
+
+运行 `src/main/java/com/example/demo/DemoApplication.java`，等待 `Started DemoApplication`，访问 http://localhost:8080。首次 Gradle 同步需要联网。
+
+### 使用附带 JAR（无需重新编译）
+
+Windows PowerShell 在根目录执行：
+
+```powershell
+java -version
+$env:JAVA_HOME
+powershell -ExecutionPolicy Bypass -File .\start.ps1
+```
+
+确认终端及 JAVA_HOME 指向 JDK 17。Linux/macOS：`./start.sh`。
+
+脚本运行 `release/xunwu-demo-4.0.0.jar`。修改源码后它不会自动更新；重新构建用 `gradlew.bat bootJar`，停止程序后把 `build/libs/` 的新 JAR 替换到 `release/`。
+
+### 登录
+
+- 普通用户：手机号 `19900000001` 至 `19900000005`，密码为首次自动初始化时的 `XUNWU_DEMO_PASSWORD`。
+- 管理员：登录页选“管理员”，账号 `admin01`（示例中另有 admin02），密码为首次的 `XUNWU_ADMIN_PASSWORD`。
+- 新用户自行注册；同一账号既能买也能卖。
+- 设置 `XUNWU_SEED_DEMO=false` 可从空市场开始，管理员仍创建。
+- 重启不重置数据或密码，修改初始密码配置不改变已存在账号。
+
+## 5. SQL 示例数据与报告核对
+
+上传的实验报告关系模型是十二表；上传的 SQL 是 SQLite 十三表旧版，ER 图也保留评分、会话商品联系等旧设计。本版以报告正文为准，移除旧版字段，并保持原有商品/订单/用户示例关系。
+
+`database/insert-demo.sql` 是转换后的 **MySQL 可执行示例数据**：七件原始商品加六件展示商品，成色并入描述，图片替换为项目实际资源，密码改为有效 PBKDF2 哈希。
+
+推荐用应用自动初始化，自选初始密码。若老师要求手动执行 SQL，可在**空库**先执行 `database/schema.sql` 再执行 `database/insert-demo.sql`；此时固定演示密码为 `DemoAdmin_2026` / `DemoUser_2026`，应用识别已有数据后不会用 `.env` 覆盖它们。两种初始化方式选一种，不重复插入。
+
+详见 `docs/报告与SQL差异核对.md`。原始报告含个人信息，没有原样发布到公开 GitHub。
+
+## 6. 功能与实现
+
+- 注册、登录、退出、会话鉴权、CSRF、用户/管理员权限隔离。
+- 商品完整 CRUD、动态查询、Builder、Repository 六方法、图片、审核、收藏。
+- 快递/自提下单、取消、模拟付款、发货/收货、退款、文字评价、聊天、举报。
+- 十二业务表的 MyBatis 接口/XML；`#{}` 参数绑定、显式 resultMap、自增键回填。
+- Service 的 `@Transactional` 与订单/商品行锁；MySQL 外键、唯一及 CHECK 约束。
+- 仅页面组合响应读取十二表后过滤；写操作直接执行对应 Mapper SQL，不再做全量副本差异写回。
+
+支付、物流、退款到账是状态演示。图片以 Data URL/本地路径存数据库，聊天通过请求刷新，不含真实支付或 WebSocket。没有改成学生系统。
+
+## 7. 测试与学习
+
+测试需独立 MySQL 库，默认 `xunwu_v4_test`。创建该库并授予测试账号权限，然后设置 `TEST_DB_PASSWORD`；可选 `TEST_DB_URL` / `TEST_DB_USER`。测试会重置夹具，数据库名必须以 `_test` 结尾，不要指向业务库。
 
 ```powershell
 $env:TEST_DB_PASSWORD = '你的测试库密码'
 .\gradlew.bat test bootJar
 ```
 
-Linux/macOS：`TEST_DB_PASSWORD='你的测试库密码' ./gradlew test bootJar`。
-
-测试结果和实际验收范围见 `docs/验收记录.md`。IDEA 请求演示见 `requests/product-crud.http`、`requests/platform.http`，现在先登录获取会话和 CSRF token，不再用演示身份头。
-
-## 文件导航
-
-- `src/main/java/.../controller`：HTTP 入口、状态码、认证接口。
-- `service`：交易规则、权限与 DTO；`repository`：JDBC 和事务；`model`：十二类业务数据；`dto`：请求/响应结构。
-- `security`：密码哈希、会话与 CSRF 验证。
-- `src/main/resources/db/schema.sql`：应用建表 SQL，`database/schema.sql` 是同内容的教学副本。
-- `docs/逐文件修改说明.md`：本轮改哪里、改什么、怎么验证。
-- `docs/学习与答辩指南.md`：C++ 基础到 Java / Spring / 数据库的阅读路线。
-- `练习要求对应说明.md`：v2.1 教学要求的逐项核对。
+- `docs/验收记录.md`：实际验证结果与边界。
+- `docs/学习与答辩指南.md`：从一次商品查询开始学习。
+- `docs/逐文件修改说明.md`：修改位置与验证方法。
+- `requests/`：IDEA HTTP 请求示例，先取 CSRF 并登录。
+- `database/verification.sql`：关系与业务一致性查询。
 
 ## 常见问题
 
-- `Access denied`：核对数据库账号/密码及授权；不是网站账号。
-- `Unknown database`：先执行建库 SQL。
-- `Communications link failure`：MySQL 未启动、端口不符或 URL 错误。
-- 首次启动提示密码长度：在启动环境中设置管理员初始密码；选择示例数据时还要设置用户初始密码。
-- 8080 被占用：`.env` 设置 `PORT=8081`，访问对应端口。
-- 登录后 403 页面凭据失效：刷新页面重新登录；不同标签页退出会使原会话失效。
-- `Unsupported class file` / Gradle JVM 不兼容：选 JDK 17/21，避免用 JDK 25/26 运行该 Gradle 8 Wrapper。
-- 数据仍是旧数据：这版重启保留 MySQL 数据，初始种子不会覆盖已有库。需重新演示时创建另一个空库，不要删除要保留的库。
-
-此交付不包含 `.idea`、`.gradle`、绝对 JDK 路径、测试数据库文件或个人凭据。
+- Git 提示连不上 127.0.0.1:7892：检查本机代理端口；已验证使用 7890 的电脑可配置 `git config --global http.proxy http://127.0.0.1:7890`，前提是代理软件运行。此 Git 设置不会自动配置 Gradle。
+- JDK 26 不兼容 Gradle：项目 SDK、Gradle JVM 选 17；不需要升级项目 Gradle 或卸载 26。
+- Access denied：检查 DB_USER/DB_PASSWORD 和 MySQL 授权，不是网站密码。
+- Unknown database：先建库。Communications link failure：检查 MySQL 服务、端口和 DB_URL。
+- 旧数据库结构提示：备份后执行 v3→v4 脚本，或配置新空库。
+- 登录失败：区分自动种子与手动 SQL 的初始密码；已有库不会重置密码。
+- 本地修改与 Pull 冲突：保留现场，先查看 git status，不要使用 reset --hard。

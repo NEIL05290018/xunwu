@@ -6,4 +6,5 @@ public class User {
   public String nickname;
   public String phone;
   public String account_status;
+  @com.fasterxml.jackson.annotation.JsonIgnore public String password_hash;
 }
