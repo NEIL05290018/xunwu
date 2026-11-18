@@ -5,6 +5,7 @@ const app=document.querySelector('#app');
 const categories=[['全部好物','ALL FINDS','grid'],['数码设备','DIGITAL','monitor'],['数码配件','ACCESSORIES','headphones'],['图书教材','BOOKS','book'],['生活用品','LIFESTYLE','home'],['更多分类','MORE','bag']];
 let category='全部好物',query='',sort='default',pickup=false,selectedChat=null,orderTab='全部',orderRole='buy';
 let uploadImages=[];
+let minPrice='',maxPrice='',searchSequence=0,pendingDelete=[];
 const title=(heading,desc,extra='')=>`<div class="page-title"><div><h1>${heading}</h1><p>${desc}</p></div>${extra}</div>`;
 const field=(name,label,value='',type='text',extra='')=>`<div class="field ${extra}"><label for="f-${name}">${label}</label><input id="f-${name}" name="${name}" type="${type}" value="${e(value)}" required maxlength="${type==='email'?120:80}"></div>`;
 const addressOptions=()=>S.db.addresses.filter(a=>a.user_id===S.currentUser).map(a=>`<option value="${a.address_id}">${e(a.recipient_name+' · '+a.detail_address)}</option>`).join('');
@@ -13,24 +14,39 @@ const findOrder=id=>S.db.orders.find(o=>o.order_id===Number(id));
 function productCard(p){
  return `<article class="product-card"><button class="favorite ${S.liked(p.product_id)?'on':''}" data-action="favorite" data-id="${p.product_id}" aria-label="${S.liked(p.product_id)?'取消收藏':'收藏'}${e(p.title)}" aria-pressed="${S.liked(p.product_id)}">${icon('heart')}</button><button class="product-picture" data-action="detail" data-id="${p.product_id}" aria-label="查看${e(p.title)}"><img src="${e(S.image(p.product_id))}" alt="${e(p.title)}示意图" loading="lazy"><span class="delivery-tag">${p.support_pickup?'支持自提':'支持快递'}${p.product_status!=='在售'?' · '+e(p.product_status):''}</span></button><div class="product-info"><button class="product-title" data-action="detail" data-id="${p.product_id}">${e(p.title)}</button><p class="product-desc">${e(p.description)}</p><div class="row between"><span class="price"><small>¥</small>${money(p.price_cents)}</span><span class="small">${e(p.category)}</span></div><div class="product-meta"><span class="seller"><span class="mini-avatar">${e(S.user(p.seller_id)?.nickname.slice(0,1))}</span>${e(S.user(p.seller_id)?.nickname)}</span><span>${S.liked(p.product_id)?'已收藏':'发现好物'}</span></div></div></article>`;
 }
-function discover(){
- let products=S.db.products.filter(p=>p.audit_status==='通过'&&p.product_status==='在售');
+async function discover(){
+ const seq=++searchSequence,hash=location.hash;
+ let products;
+ try {
+  const params={scope:'market',q:query};
+  if(!['全部好物','更多分类'].includes(category))params.category=category;
+  if(minPrice!=='')params.minPrice=Math.round(Number(minPrice)*100);
+  if(maxPrice!=='')params.maxPrice=Math.round(Number(maxPrice)*100);
+  products=await S.searchProducts(params);
+ } catch(err){if(seq===searchSequence&&hash===location.hash)toast(err.message);return;}
+ if(seq!==searchSequence||hash!==location.hash||!S.account?.role)return;
  if(category==='更多分类') products=products.filter(p=>['服饰箱包','运动户外'].includes(p.category));
  else if(category!=='全部好物') products=products.filter(p=>p.category===category);
- if(query) products=products.filter(p=>(p.title+p.description+p.category).toLowerCase().includes(query.toLowerCase()));
+
  if(pickup)products=products.filter(p=>p.support_pickup);
  if(sort==='low')products.sort((a,b)=>a.price_cents-b.price_cents);
  if(sort==='high')products.sort((a,b)=>b.price_cents-a.price_cents);
  if(sort==='new')products.sort((a,b)=>b.product_id-a.product_id);
- app.innerHTML=`<section class="hero"><div class="hero-copy"><div class="eyebrow">A SECOND LIFE, A NEW STORY</div><h1>闲置有去处，<br>好物<em>再相遇。</em></h1><p>把用不到的，变成别人刚好需要的。<br>在循物，发现生活里的下一份小惊喜。</p><a class="hero-link" href="#finds">去发现好物 ${icon('arrow')}</a></div><div class="hero-art" aria-hidden="true"><span class="hero-stamp">GOOD FINDS<br>好物循环</span><img class="hero-object camera" src="/assets/camera.svg" alt=""><img class="hero-object lamp" src="/assets/lamp.svg" alt=""><img class="hero-object book" src="/assets/book.svg" alt=""><span class="hero-note">让每件好物，多一个故事 ↗</span></div></section><div class="trust-strip"><span>${icon('leaf')}闲置循环，物尽其用</span><span>${icon('chat')}直接沟通，认真交易</span><span>${icon('box')}快递自提，自由选择</span></div><section id="finds"><div class="section-heading"><div><h2>发现你的下一件好物</h2><p>有些惊喜，不一定要买全新的。</p></div><small>CURATED EVERYDAY FINDS</small></div><div class="category-row">${categories.map(([c,en,ic])=>`<button class="category ${category===c?'active':''}" data-action="category" data-value="${c}" aria-pressed="${category===c}">${icon(ic)}<span>${c}<small>${en}</small></span></button>`).join('')}</div><div class="toolbar"><form id="search-form" class="search">${icon('search')}<input aria-label="搜索闲置商品" name="query" value="${e(query)}" placeholder="搜索你想要的好物…" maxlength="80"><button type="submit">搜索</button></form><div class="filters"><span>共 ${products.length} 件好物</span><label class="check"><input id="pickup-filter" type="checkbox" ${pickup?'checked':''}>仅看支持自提</label><select id="sort-filter" aria-label="商品排序"><option value="default">综合推荐</option><option value="new">最新发布</option><option value="low">价格从低到高</option><option value="high">价格从高到低</option></select></div></div><div class="product-grid">${products.map(productCard).join('')||empty('暂时没有符合条件的好物。试试其他分类或关键词。')}</div><div class="count-line"><span>已展示全部 ${products.length} 件好物 · 商品图片为本地示意插画</span><a class="pill" href="#finds">回到好物顶部 ↑</a></div></section><section class="manifesto"><div><h3>每一次转手，都是新的开始。</h3><p>让不再需要的物品，遇见刚好需要它的人。</p></div>${icon('leaf')}</section>`;
+ app.innerHTML=`<section class="hero"><div class="hero-copy"><div class="eyebrow">A SECOND LIFE, A NEW STORY</div><h1>闲置有去处，<br>好物<em>再相遇。</em></h1><p>把用不到的，变成别人刚好需要的。<br>在循物，发现生活里的下一份小惊喜。</p><a class="hero-link" href="#finds">去发现好物 ${icon('arrow')}</a></div><div class="hero-art" aria-hidden="true"><span class="hero-stamp">GOOD FINDS<br>好物循环</span><img class="hero-object camera" src="/assets/camera.svg" alt=""><img class="hero-object lamp" src="/assets/lamp.svg" alt=""><img class="hero-object book" src="/assets/book.svg" alt=""><span class="hero-note">让每件好物，多一个故事 ↗</span></div></section><div class="trust-strip"><span>${icon('leaf')}闲置循环，物尽其用</span><span>${icon('chat')}直接沟通，认真交易</span><span>${icon('box')}快递自提，自由选择</span></div><section id="finds"><div class="section-heading"><div><h2>发现你的下一件好物</h2><p>有些惊喜，不一定要买全新的。</p></div><small>CURATED EVERYDAY FINDS</small></div><div class="category-row">${categories.map(([c,en,ic])=>`<button class="category ${category===c?'active':''}" data-action="category" data-value="${c}" aria-pressed="${category===c}">${icon(ic)}<span>${c}<small>${en}</small></span></button>`).join('')}</div><div class="toolbar"><form id="search-form" class="search">${icon('search')}<input aria-label="搜索闲置商品" name="query" value="${e(query)}" placeholder="搜索你想要的好物…" maxlength="80"><input class="price-filter" aria-label="最低价格（元）" name="minPrice" type="number" min="0" max="1000000" step="0.01" value="${e(minPrice)}" placeholder="最低价（元）"><input class="price-filter" aria-label="最高价格（元）" name="maxPrice" type="number" min="0" max="1000000" step="0.01" value="${e(maxPrice)}" placeholder="最高价（元）"><button type="submit">搜索</button></form><div class="filters"><span>共 ${products.length} 件好物</span><label class="check"><input id="pickup-filter" type="checkbox" ${pickup?'checked':''}>仅看支持自提</label><select id="sort-filter" aria-label="商品排序"><option value="default">综合推荐</option><option value="new">最新发布</option><option value="low">价格从低到高</option><option value="high">价格从高到低</option></select></div></div><div class="product-grid">${products.map(productCard).join('')||empty('暂时没有符合条件的好物。试试其他分类或关键词。')}</div><div class="count-line"><span>已展示全部 ${products.length} 件好物 · 商品图片为本地示意插画</span><a class="pill" href="#finds">回到好物顶部 ↑</a></div></section><section class="manifesto"><div><h3>每一次转手，都是新的开始。</h3><p>让不再需要的物品，遇见刚好需要它的人。</p></div>${icon('leaf')}</section>`;
  document.querySelector('#sort-filter').value=sort;
 }
-function favorites(){app.innerHTML=title('我的收藏','喜欢的好物，先替你留个位置。')+`<div class="product-grid">${S.db.products.filter(p=>S.liked(p.product_id)).map(productCard).join('')||empty('还没有收藏，去发现喜欢的好物吧。','<a href="#discover">浏览闲置 →</a>')}</div>`;}
-function showDetail(id){
- const p=S.product(Number(id));if(!p)return toast('商品不存在');
+async function favorites(){
+ const hash=location.hash,seq=++searchSequence;
+ try{const products=await S.joinedFavorites();if(seq!==searchSequence||hash!==location.hash||!S.account?.role)return;
+ app.innerHTML=title('我的收藏','喜欢的好物，先替你留个位置。')+`<div class="product-grid">${products.map(p=>`<div>${productCard(p)}<p class="small">收藏于 ${e(p.favorited_at)}</p></div>`).join('')||empty('还没有收藏，去发现喜欢的好物吧。')}</div>`;
+ }catch(err){toast(err.message);}
+}
+async function showDetail(id){
+ let p=S.product(Number(id));if(!p)return toast('商品不存在');
  if(S.account.role==='ADMIN'){modal('商品详情',`<h2>${e(p.title)}</h2><p>${e(p.description)}</p><p>¥${money(p.price_cents)} · ${e(p.category)}</p><div class="thumbnails">${S.images(p.product_id).map(src=>`<img src="${e(src)}" alt="商品图片">`).join('')}</div>`);return;}
+ try{p=await S.joinedDetail(id);}catch(err){toast(err.message);return;}
  const own=p.seller_id===S.currentUser,available=p.product_status==='在售'&&p.audit_status==='通过';
- modal('好物详情',`<div class="detail"><div><img class="detail-photo" id="detail-photo" src="${e(S.image(p.product_id))}" alt="${e(p.title)}示意图"><div class="thumbnails">${S.images(p.product_id).map((src,i)=>`<button data-action="thumbnail" data-index="${i}" data-id="${id}" aria-label="查看第${i+1}张图片"><img src="${e(src)}" alt="缩略图${i+1}"></button>`).join('')}</div><p class="small">商品图片为示意插画；你发布时可上传真实图片。</p></div><div class="detail-info">${status(p.product_status)} ${status(p.audit_status)}<h2>${e(p.title)}</h2><span class="price"><small>¥</small>${money(p.price_cents)}</span><p>${e(p.description)}</p><div class="row"><span class="avatar" style="display:grid;place-items:center">${e(S.user(p.seller_id)?.nickname[0])}</span><div><b>${e(S.user(p.seller_id)?.nickname)}</b><div class="small">${e(p.category)} · ${p.support_express?'快递 ':''}${p.support_pickup?'自提':''}</div></div></div><div class="form-actions">${own?`<button class="primary" data-action="edit-product" data-id="${id}" ${p.product_status==='锁定'||p.product_status==='已售'?'disabled':''}>编辑我的商品</button><button class="secondary" data-action="delete-product" data-id="${id}" ${['锁定','已售'].includes(p.product_status)?'disabled':''}>删除商品</button>`:`<button class="primary" data-action="buy" data-id="${id}" ${available?'':'disabled'}>我想要</button><button class="secondary" data-action="contact" data-id="${p.seller_id}">联系卖家</button>`}<button class="secondary" data-action="detail-favorite" data-id="${id}">${S.liked(p.product_id)?'已收藏':'收藏好物'} ${icon('heart')}</button></div>${!own?`<button class="detail-report" data-action="report" data-id="${id}">商品有问题？提交举报</button>`:''}</div></div>`);
+ modal('好物详情',`<div class="detail"><div><img class="detail-photo" id="detail-photo" src="${e(S.image(p.product_id))}" alt="${e(p.title)}示意图"><div class="thumbnails">${S.images(p.product_id).map((src,i)=>`<button data-action="thumbnail" data-index="${i}" data-id="${id}" aria-label="查看第${i+1}张图片"><img src="${e(src)}" alt="缩略图${i+1}"></button>`).join('')}</div><p class="small">商品图片为示意插画；你发布时可上传真实图片。</p></div><div class="detail-info">${status(p.product_status)} ${status(p.audit_status)}<h2>${e(p.title)}</h2><span class="price"><small>¥</small>${money(p.price_cents)}</span><p>${e(p.description)}</p><div class="row"><span class="avatar" style="display:grid;place-items:center">${e(S.user(p.seller_id)?.nickname[0])}</span><div><b>${e(p.seller_nickname)}</b><div class="small">${e(p.category)} · ${p.support_express?'快递 ':''}${p.support_pickup?'自提':''}</div></div></div><div class="form-actions">${own?`<button class="primary" data-action="edit-product" data-id="${id}" ${p.product_status==='锁定'||p.product_status==='已售'?'disabled':''}>编辑我的商品</button><button class="secondary" data-action="delete-product" data-id="${id}" ${['锁定','已售'].includes(p.product_status)?'disabled':''}>删除商品</button>`:`<button class="primary" data-action="buy" data-id="${id}" ${available?'':'disabled'}>我想要</button><button class="secondary" data-action="contact" data-id="${p.seller_id}">联系卖家</button>`}<button class="secondary" data-action="detail-favorite" data-id="${id}">${S.liked(p.product_id)?'已收藏':'收藏好物'} ${icon('heart')}</button></div>${!own?`<button class="detail-report" data-action="report" data-id="${id}">商品有问题？提交举报</button>`:''}</div></div>`);
 }
 function buy(id){
  const p=S.product(Number(id));
@@ -69,7 +85,7 @@ function messages(){
  const log=document.querySelector('.chat-log');if(log)log.scrollTop=log.scrollHeight;
 }
 function profile(){
- const u=S.user();app.innerHTML=title('我的循物','整理生活，也给闲置一个新的开始。',`<button class="secondary" data-action="identity">账号与退出</button>`)+`<div class="two-column"><section class="panel"><div class="row"><span class="avatar" style="display:grid;place-items:center">${e(u.nickname[0])}</span><div><h3>${e(u.nickname)}</h3><span class="small">${e(u.phone)} · ${status(u.account_status)}</span></div></div><p class="hint">您已登录。个人地址、订单和消息仅对相关账号开放。</p><div class="row"><button class="secondary" data-action="address">＋ 添加地址</button></div></section><section class="panel"><h3>我的收货地址</h3>${S.db.addresses.filter(a=>a.user_id===S.currentUser).map(a=>`<div class="review"><b>${e(a.recipient_name)}</b> · ${e(a.recipient_phone)}<p>${e(a.detail_address)}</p><button class="inline-link" data-action="address" data-id="${a.address_id}">编辑地址</button></div>`).join('')||'<p class="small">还没有地址，购买快递商品前请先添加。</p>'}</section></div><div class="section-heading"><div><h2>我发布的闲置</h2><p>待审核、在售和交易中的物品都在这里。</p></div><button class="secondary" data-action="publish">＋ 发布</button></div><div class="product-grid">${S.db.products.filter(p=>p.seller_id===S.currentUser).map(p=>`<div><div class="row" style="margin-bottom:9px">${status(p.product_status)}${status(p.audit_status)}</div>${productCard(p)}${p.audit_note?`<p class="small">审核意见：${e(p.audit_note)}</p>`:''}</div>`).join('')||empty('还没有发布闲置。')}</div>`;
+ const u=S.user();app.innerHTML=title('我的循物','整理生活，也给闲置一个新的开始。',`<button class="secondary" data-action="purchases">购买记录</button><button class="secondary" data-action="identity">账号与退出</button>`)+`<div class="two-column"><section class="panel"><div class="row"><span class="avatar" style="display:grid;place-items:center">${e(u.nickname[0])}</span><div><h3>${e(u.nickname)}</h3><span class="small">${e(u.phone)} · ${status(u.account_status)}</span></div></div><p class="hint">您已登录。个人地址、订单和消息仅对相关账号开放。</p><div class="row"><button class="secondary" data-action="address">＋ 添加地址</button></div></section><section class="panel"><h3>我的收货地址</h3>${S.db.addresses.filter(a=>a.user_id===S.currentUser).map(a=>`<div class="review"><b>${e(a.recipient_name)}</b> · ${e(a.recipient_phone)}<p>${e(a.detail_address)}</p><button class="inline-link" data-action="address" data-id="${a.address_id}">编辑地址</button></div>`).join('')||'<p class="small">还没有地址，购买快递商品前请先添加。</p>'}</section></div><div class="section-heading"><div><h2>我发布的闲置</h2><p>待审核、在售和交易中的物品都在这里。</p></div><div class="row"><button class="secondary" data-action="batch-delete">批量删除所选</button><button class="secondary" data-action="publish">＋ 发布</button></div></div><div class="product-grid">${S.db.products.filter(p=>p.seller_id===S.currentUser).map(p=>`<div><div class="row" style="margin-bottom:9px">${status(p.product_status)}${status(p.audit_status)}<label class="check"><input type="checkbox" name="selected-product" value="${p.product_id}" ${['锁定','已售'].includes(p.product_status)?'disabled':''}>选择</label></div>${productCard(p)}${p.audit_note?`<p class="small">审核意见：${e(p.audit_note)}</p>`:''}</div>`).join('')||empty('还没有发布闲置。')}</div>`;
 }
 function admin(){
  app.innerHTML=title('管理后台','商品审核、举报处理与退款记录。')+`<p class="hint">当前为管理员会话。审核通过的商品会进入市场，举报处理结果会保存到数据库。</p><div class="two-column"><section class="panel"><h3>待审核商品</h3>${S.db.products.filter(p=>p.audit_status==='待审核').map(p=>`<article class="admin-item"><div><span class="small">商品 #${p.product_id} · ${e(S.user(p.seller_id)?.nickname)}</span><h3>${e(p.title)}</h3><p class="small">${e(p.description)}</p><button class="inline-link" data-action="detail" data-id="${p.product_id}">查看详情与图片</button></div><div class="order-actions"><button class="secondary" data-action="audit-reject" data-id="${p.product_id}">驳回</button><button class="primary" data-action="audit-pass" data-id="${p.product_id}">通过</button></div></article>`).join('')||empty('待审核商品已全部处理。')}</section><section class="panel"><h3>商品举报</h3>${S.db.reports.map(r=>`<article class="admin-item"><div><span class="small">举报 #${r.report_id} · 商品 #${r.product_id}</span><h3>${e(S.product(r.product_id)?.title)}</h3><p class="small">${e(r.reason)}</p>${status(r.report_status)}<p class="small">${e(r.handle_note||'等待处理')}</p></div>${r.report_status==='待处理'?`<div class="order-actions"><button class="secondary" data-action="report-dismiss" data-id="${r.report_id}">不成立</button><button class="primary" data-action="report-uphold" data-id="${r.report_id}">成立并下架</button></div>`:''}</article>`).join('')||empty('暂时没有举报。')}</section></div><section class="panel" style="margin-top:22px"><h3>退款记录</h3>${S.db.refunds.map(r=>`<div class="review">订单 #${r.order_id} · ${e(r.reason)} ${status(r.refund_status)}<span class="small"> · 全额退款 ¥${money(findOrder(r.order_id).deal_price_cents+findOrder(r.order_id).shipping_fee_cents)}</span></div>`).join('')||'<p class="small">暂无退款申请</p>'}<p class="hint">本阶段由卖家在“我卖出的”中处理退款；管理员介入字段保留，暂不实现资金与物流流程。</p></section>`;
@@ -87,6 +103,7 @@ function addressForm(id){const a=S.db.addresses.find(a=>a.address_id===Number(id
 function confirmAction(heading,desc,action,id){modal(heading,`<p class="small">${desc}</p><div class="form-actions"><button class="secondary" data-action="close">返回</button><button class="primary" data-action="confirmed-${action}" data-id="${id||''}">确认</button></div>`);}
 function navigate(route){if(location.hash==='#'+route)render();else location.hash=route;}
 function render(){
+ searchSequence++;
  if(!S.account?.role)return authPage(location.hash==='#admin'?'admin':'login');
  document.querySelector('#nav').hidden=S.account.role==='ADMIN';document.querySelector('#publish-btn').hidden=S.account.role==='ADMIN';
  const route=S.account.role==='ADMIN'?'admin':location.hash.slice(1).split('?')[0]||'discover';
@@ -100,6 +117,14 @@ document.addEventListener('click',async event=>{
  if(btn.disabled)return;btn.disabled=true;
  try{
   if(action==='close')return close();
+  if(action==='purchases'){
+   const rows=await S.purchases();modal('我的购买记录',rows.map(o=>`<div class="review"><b>${e(o.snapshot_title)}</b><p>订单 #${o.order_id} · 卖家 ${e(o.seller_nickname)} · ¥${money(o.deal_price_cents+o.shipping_fee_cents)}</p>${status(o.order_status)}</div>`).join('')||empty('还没有购买记录。'));return;
+  }
+  if(action==='batch-delete'){
+   pendingDelete=Array.from(document.querySelectorAll('input[name="selected-product"]:checked'),x=>Number(x.value));
+   if(!pendingDelete.length)return toast('请先选择商品');
+   return confirmAction('批量删除商品',`确认删除所选 ${pendingDelete.length} 件商品？任意一件有交易或举报历史时，整批不会删除。`,'batch-delete');
+  }
   if(action==='category'){category=value;return discover();}
   if(action==='detail')return showDetail(id);
   if(action==='thumbnail'){document.querySelector('#detail-photo').src=S.images(Number(id))[Number(btn.dataset.index)];return;}
@@ -120,7 +145,8 @@ document.addEventListener('click',async event=>{
   if(['pay','cancel','receive','refund-agree','refund-reject'].includes(action))return confirmAction({pay:'模拟付款',cancel:'取消订单',receive:'确认收货','refund-agree':'同意全额退款','refund-reject':'拒绝退款'}[action],{pay:'仅更新演示订单状态，不会扣款。',cancel:'取消后商品将恢复为在售状态。',receive:'请确认本次演示订单已收货。','refund-agree':'订单将标记为已退款，商品下架。','refund-reject':'退款申请将标记为已拒绝，订单保持当前状态。'}[action],action,id);
   if(action.startsWith('confirmed-')){
    const op=action.replace('confirmed-','');
-   if(op==='delete-product')await S.deleteProduct(Number(id));
+   if(op==='batch-delete'){await S.deleteProducts(pendingDelete);pendingDelete=[];}
+   else if(op==='delete-product')await S.deleteProduct(Number(id));
    else if(op==='refund-agree'||op==='refund-reject')await S.decideRefund(Number(id),op==='refund-agree');
    else await S.transition(Number(id),op);
    close();render();toast('演示状态已更新');return;
@@ -145,7 +171,7 @@ document.addEventListener('submit',async event=>{
    await S.login(register?{nickname:values.nickname,phone:values.account,password:values.password}:{account:values.account,password:values.password,role:form.dataset.mode==='admin'?'ADMIN':'USER'},register);
    navigate(S.account.role==='ADMIN'?'admin':'discover');return;
   }
-  if(form.id==='search-form'){query=(values.query||'').trim();return discover();}
+  if(form.id==='search-form'){if(values.minPrice!==''&&values.maxPrice!==''&&Number(values.minPrice)>Number(values.maxPrice))return toast('最低价格不能大于最高价格');query=(values.query||'').trim();minPrice=values.minPrice;maxPrice=values.maxPrice;return discover();}
   if(form.id==='buy-form'){await S.createOrder(id,values.delivery_method,Number(values.address_id));close();orderRole='buy';orderTab='全部';navigate('orders');return toast('演示订单已创建，等待模拟付款');}
   if(form.id==='publish-form'){
    if(!values.title.trim()||!values.description.trim())throw new Error('请填写标题和描述。');
@@ -153,7 +179,7 @@ document.addEventListener('submit',async event=>{
    const price=Number(values.price),cents=Math.round(price*100);if(!Number.isFinite(price)||cents<1||cents>100000000)throw new Error('请输入有效价格。');
    await S.publish(id,{title:values.title.trim(),description:values.description.trim(),price_cents:cents,category:values.category,support_express:f.has('support_express'),support_pickup:f.has('support_pickup'),images:uploadImages});close();navigate('profile');return toast('提交成功，请等待管理员审核');
   }
-  if(form.id==='chat-form'){const content=values.content.trim();if(!content)throw new Error('请输入消息内容。');await S.send(selectedChat,content);messages();document.querySelector('#chat-form input').focus();return;}
+  if(form.id==='chat-form'){const content=values.content.trim();if(!content)throw new Error('请输入消息内容。');const chat=selectedChat;await S.send(chat,content);if(location.hash==='#messages'&&selectedChat===chat){messages();document.querySelector('#chat-form input')?.focus();}return;}
   if(form.id==='address-form'){
    if(Object.values(values).some(v=>!v.trim()))throw new Error('请完整填写地址信息。');
    await S.address(id,values);close();render();return toast('地址已保存');

@@ -1,0 +1,38 @@
+@host = http://localhost:8080
+@password = ChangeUserPassword_2026
+
+### 建立会话并获取 CSRF
+GET {{host}}/api/auth/session
+
+> {% client.global.set("csrf", response.body.csrf); %}
+
+### 登录（改成自己的首次初始化密码）
+POST {{host}}/api/auth/login
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"account":"19900000001","password":"{{password}}","role":"USER"}
+
+> {% client.global.set("csrf", response.body.csrf); %}
+
+### 动态组合查询；价格为分，范围包含边界
+GET {{host}}/api/products?scope=market&q=机械&category=数码配件&minPrice=10000&maxPrice=20000
+
+### 单独上限，无关键词和分类
+GET {{host}}/api/products?maxPrice=5000
+
+### JOIN 商品与卖家
+GET {{host}}/api/queries/products/101
+
+### JOIN 当前用户收藏
+GET {{host}}/api/queries/favorites
+
+### JOIN 当前用户购买记录
+GET {{host}}/api/queries/purchases
+
+### 批量删除：先新建自己的无历史草稿，再将示例编号替换为实际编号
+POST {{host}}/api/products/batch-delete
+Content-Type: application/json
+X-CSRF-Token: {{csrf}}
+
+{"ids":[999998,999999]}

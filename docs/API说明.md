@@ -31,3 +31,13 @@ JSON 编码 UTF-8，金额单位分。先 GET `/api/auth/session`，浏览器获
 商品 GET/PUT/DELETE 不存在时显式返回空 404；其他业务错误通常为 `{ "code": "...", "message": "..." }`。不要假设所有响应都能 `response.json()`。
 
 请求字段完整定义：`dto/MarketRequests.java` 及 `AuthController` 中的 record。响应定义：`dto/MarketResponses.java`。可直接执行的例子见 `requests/`。
+
+## v4.1 新增
+
+- `GET /api/products` 增加可选整数 `minPrice` / `maxPrice`（分，闭区间，0—100000000）。保留 q/category/scope。
+- `POST /api/products/batch-delete`：`{"ids":[118,119]}`，最多100项，返回 `{"deleted":2}`；去重，整批事务。空/非法输入400，无权限403，不存在404，有交易/举报历史409。
+- `GET /api/queries/products/{id}`：商品与公开卖家昵称，未公开且非本人返回404。
+- `GET /api/queries/favorites`：当前用户收藏及商品、卖家昵称、收藏时间。
+- `GET /api/queries/purchases`：当前用户购买记录及卖家昵称，名称使用订单快照。
+
+新接口均需普通用户登录，写入需 X-CSRF-Token。身份以服务器会话为准，不接受 uid 参数切换用户。详见 `课堂练习-MyBatis进阶.md`。

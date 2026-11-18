@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="com.example.demo.DemoApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-17T01:37:56.981Z" hostname="b5d147216b2c" time="0.208">
+  <testcase name="contextLoads()" classname="com.example.demo.DemoApplicationTests" time="0.208" />
+  </testsuite>

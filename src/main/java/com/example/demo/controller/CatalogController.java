@@ -23,8 +23,18 @@ public class CatalogController {
       @RequestAttribute("userId") int uid,
       @RequestParam(required = false) String category,
       @RequestParam(required = false) String q,
-      @RequestParam(defaultValue = "market") String scope) {
-    return ResponseEntity.ok(service.find(uid, category, q, scope));
+      @RequestParam(defaultValue = "market") String scope,
+      @RequestParam(required = false) Integer minPrice,
+      @RequestParam(required = false) Integer maxPrice) {
+    return ResponseEntity.ok(service.find(uid, category, q, scope, minPrice, maxPrice));
+  }
+
+  public record BatchDeleteInput(List<Integer> ids) {}
+
+  @PostMapping("/batch-delete")
+  public java.util.Map<String, Integer> deleteBatch(
+      @RequestAttribute("userId") int uid, @RequestBody BatchDeleteInput input) {
+    return java.util.Map.of("deleted", service.deleteBatch(uid, input.ids()));
   }
 
   @GetMapping("/{id}")

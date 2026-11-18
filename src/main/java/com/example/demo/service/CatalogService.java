@@ -24,17 +24,31 @@ public class CatalogService extends MarketSupport {
 
   @Transactional(readOnly = true)
   public List<ProductResponse> find(int uid, String category, String keyword, String scope) {
+    return find(uid, category, keyword, scope, null, null);
+  }
+
+  @Transactional(readOnly = true)
+  public List<ProductResponse> find(
+      int uid, String category, String keyword, String scope, Integer minPrice, Integer maxPrice) {
     user(uid);
+    require(
+        (minPrice == null || minPrice >= 0 && minPrice <= 100000000)
+            && (maxPrice == null || maxPrice >= 0 && maxPrice <= 100000000)
+            && (minPrice == null || maxPrice == null || minPrice <= maxPrice),
+        INVALID,
+        "价格区间无效，单位为分");
     require(List.of("market", "mine", "all").contains(scope), INVALID, "查询范围无效");
     List<ProductResponse> result = new ArrayList<>();
     for (Product p :
         repository
             .product()
-            .search(
+            .searchRange(
                 uid,
                 scope,
                 category == null ? null : category.trim(),
-                keyword == null ? null : keyword.trim())) result.add(dto(p, ProductResponse.class));
+                keyword == null ? null : keyword.trim(),
+                minPrice,
+                maxPrice)) result.add(dto(p, ProductResponse.class));
     return result;
   }
 
@@ -116,6 +130,28 @@ public class CatalogService extends MarketSupport {
     repository.favorite().deleteByProduct(id);
     repository.productImage().deleteByProduct(id);
     products.deleteById(id);
+  }
+
+  public int deleteBatch(int uid, List<Integer> ids) {
+    user(uid);
+    require(ids != null && !ids.isEmpty() && ids.size() <= 100, INVALID, "请选择1至100件商品");
+    for (Integer id : ids) require(id != null && id > 0, INVALID, "商品编号无效");
+    List<Integer> sorted = new ArrayList<>(new TreeSet<>(ids));
+    // 固定顺序锁定全部商品，校验全部通过后才删除；任意失败整批回滚。
+    for (int id : sorted) {
+      Product p = lockProduct(id);
+      require(p.seller_id == uid, FORBIDDEN, "只能删除自己的商品");
+      require(
+          !List.of("锁定", "已售").contains(p.product_status)
+              && repository.product().historyCount(id) == 0,
+          CONFLICT,
+          "有交易或举报历史的商品不可删除");
+    }
+    for (int id : sorted) {
+      repository.favorite().deleteByProduct(id);
+      repository.productImage().deleteByProduct(id);
+    }
+    return repository.product().deleteBatch(sorted);
   }
 
   public void favorite(int uid, int id, boolean add) {

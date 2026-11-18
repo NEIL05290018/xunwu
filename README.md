@@ -1,8 +1,14 @@
-# 循物二手交易平台 v4.0.0 · Spring Boot + MyBatis + MySQL
+# 循物二手交易平台 v4.1.0 · Spring Boot + MyBatis + MySQL
 
 从 v3.0 JdbcTemplate 版升级为 **Mapper 接口 + Mapper XML + Service 事务**。JDK 17、Gradle Wrapper 8.14.3、Spring Boot 3.5.16、MyBatis Starter 3.0.4、MySQL 8.0.16+（推荐 8.4）。前端继续使用原生 HTML/CSS/JavaScript。
 
-**先看完整交接：[`二手交易平台-v4.0-完整交接文档.md`](二手交易平台-v4.0-完整交接文档.md)**。
+**先看完整交接：[`二手交易平台-v4.1-完整交接文档.md`](二手交易平台-v4.1-完整交接文档.md)**。
+
+## 本版新增
+
+首页支持关键词、分类、最低价/最高价组合查询；“我的”可勾选多件商品并批量删除；收藏、商品详情和购买记录使用 SQL JOIN。批量删除最多100件，任意一件无权限或有交易/举报历史则整批不删除。
+
+**v4.0 → v4.1 无数据库结构改动，无需额外执行升级 SQL。** 原有 `.env` 和数据继续使用；v3 用户仍需下面的 v3→v4 升级步骤。
 
 ## 1. 拉取代码
 
@@ -71,7 +77,7 @@ powershell -ExecutionPolicy Bypass -File .\start.ps1
 
 确认终端及 JAVA_HOME 指向 JDK 17。Linux/macOS：`./start.sh`。
 
-脚本运行 `release/xunwu-demo-4.0.0.jar`。修改源码后它不会自动更新；重新构建用 `gradlew.bat bootJar`，停止程序后把 `build/libs/` 的新 JAR 替换到 `release/`。
+脚本运行 `release/xunwu-demo-4.1.0.jar`。修改源码后它不会自动更新；重新构建用 `gradlew.bat bootJar`，停止程序后把 `build/libs/` 的新 JAR 替换到 `release/`。
 
 ### 登录
 

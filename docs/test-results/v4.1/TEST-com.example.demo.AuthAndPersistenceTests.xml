@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="com.example.demo.AuthAndPersistenceTests" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-17T01:37:54.688Z" hostname="b5d147216b2c" time="1.867">
+  <testcase name="pickupCancelAndReportLifecycle()" classname="com.example.demo.AuthAndPersistenceTests" time="0.282" />
+  <testcase name="databaseConstraintsAndRollbackAreReal()" classname="com.example.demo.AuthAndPersistenceTests" time="0.217" />
+  <testcase name="registrationLoginLogoutAndIdentitySpoofing()" classname="com.example.demo.AuthAndPersistenceTests" time="0.415" />
+  <testcase name="productCrudPersistsAndProtectsHistory()" classname="com.example.demo.AuthAndPersistenceTests" time="0.276" />
+  <testcase name="builderAndRepositorySixMethods()" classname="com.example.demo.AuthAndPersistenceTests" time="0.212" />
+  <testcase name="conversationMessagesPersistAndStayPrivate()" classname="com.example.demo.AuthAndPersistenceTests" time="0.25" />
+  <testcase name="queryScopesExcludeOtherDrafts()" classname="com.example.demo.AuthAndPersistenceTests" time="0.207" />
+  </testsuite>
