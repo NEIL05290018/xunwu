@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.MarketQueryMapper">
+  <select id="detail" resultType="com.example.demo.dto.JoinedProduct">
+    SELECT p.*, u.nickname AS seller_nickname FROM products p
+    JOIN users u ON u.user_id=p.seller_id
+    WHERE p.product_id=#{id} AND (p.seller_id=#{uid} OR p.audit_status='通过')
+  </select>
+  <select id="favorites" resultType="com.example.demo.dto.JoinedProduct">
+    SELECT p.*, u.nickname AS seller_nickname, f.favorited_at FROM favorites f
+    JOIN products p ON p.product_id=f.product_id JOIN users u ON u.user_id=p.seller_id
+    WHERE f.user_id=#{uid} AND (p.seller_id=#{uid} OR p.audit_status='通过')
+    ORDER BY f.favorited_at DESC, p.product_id DESC
+  </select>
+  <select id="purchases" resultType="com.example.demo.dto.PurchaseSummary">
+    SELECT o.order_id,o.product_id,o.buyer_id,o.snapshot_title,o.deal_price_cents,
+      o.shipping_fee_cents,o.order_status,o.created_at,p.seller_id,u.nickname AS seller_nickname
+    FROM orders o JOIN products p ON p.product_id=o.product_id
+    JOIN users u ON u.user_id=p.seller_id
+    WHERE o.buyer_id=#{uid} ORDER BY o.order_id DESC
+  </select>
+</mapper>

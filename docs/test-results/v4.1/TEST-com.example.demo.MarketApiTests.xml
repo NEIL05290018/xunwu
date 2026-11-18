@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="com.example.demo.MarketApiTests" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-17T01:37:57.197Z" hostname="b5d147216b2c" time="2.786">
+  <testcase name="scopesPrivateDataAndDeduplicatesConversationsAndFavorites()" classname="com.example.demo.MarketApiTests" time="0.268" />
+  <testcase name="failedShippingRollsBackAndRefundBlocksReceiving()" classname="com.example.demo.MarketApiTests" time="0.248" />
+  <testcase name="concurrentBuyersCannotReserveSameProduct()" classname="com.example.demo.MarketApiTests" time="0.247" />
+  <testcase name="rejectsSelfPurchaseInvalidRequestsAndUnauthorizedEdits()" classname="com.example.demo.MarketApiTests" time="0.241" />
+  <testcase name="completeTradingLifecycleAndSnapshots()" classname="com.example.demo.MarketApiTests" time="0.389" />
+  </testsuite>

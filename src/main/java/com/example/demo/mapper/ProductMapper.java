@@ -26,5 +26,15 @@ public interface ProductMapper {
       @Param("category") String category,
       @Param("keyword") String keyword);
 
+  List<Product> searchRange(
+      @Param("uid") int uid,
+      @Param("scope") String scope,
+      @Param("category") String category,
+      @Param("keyword") String keyword,
+      @Param("minPrice") Integer minPrice,
+      @Param("maxPrice") Integer maxPrice);
+
+  int deleteBatch(@Param("ids") List<Integer> ids);
+
   int historyCount(@Param("id") int id);
 }

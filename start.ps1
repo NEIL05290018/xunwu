@@ -11,5 +11,5 @@ Get-Content '.env' -Encoding UTF8 | ForEach-Object {
     }
 }
 $javaCommand = if ($env:JAVA_HOME) { Join-Path $env:JAVA_HOME 'bin/java.exe' } else { 'java' }
-& $javaCommand -jar 'release/xunwu-demo-4.0.0.jar'
+& $javaCommand -jar 'release/xunwu-demo-4.1.0.jar'
 exit $LASTEXITCODE

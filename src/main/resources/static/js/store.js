@@ -47,3 +47,9 @@ export async function report(id,content){return change(`/products/${id}/reports`
 export async function audit(id,agree,note){return change(`/admin/products/${id}/audit`,'PUT',{agree,note},true);}
 export async function decideReport(id,agree,note){return change(`/admin/reports/${id}`,'PUT',{agree,note},true);}
 export async function deleteProduct(id){return change(`/products/${id}`,'DELETE');}
+
+export async function searchProducts(values){return request('/products?'+new URLSearchParams(values));}
+export async function joinedDetail(id){return request(`/queries/products/${id}`);}
+export async function joinedFavorites(){return request('/queries/favorites');}
+export async function purchases(){return request('/queries/purchases');}
+export async function deleteProducts(ids){return change('/products/batch-delete','POST',{ids});}

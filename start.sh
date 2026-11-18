@@ -10,4 +10,4 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 done < .env
 java_command=java
 [[ -n "${JAVA_HOME:-}" ]] && java_command="$JAVA_HOME/bin/java"
-exec "$java_command" -jar release/xunwu-demo-4.0.0.jar
+exec "$java_command" -jar release/xunwu-demo-4.1.0.jar
